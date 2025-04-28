@@ -3,7 +3,7 @@ const spinBtn = document.getElementById("spin-btn");
 const finalValue = document.getElementById("final-value");
 const walletBtn = document.getElementById("wallet-btn");
 const withdrawBtn = document.getElementById("withdraw-btn");
-const walletDisplay = document.querySelector("#wallet-display span"); // Get the span to update
+//const walletDisplay = document.querySelector("#wallet-display span"); // Get the span to update  // मैंने इसे हटा दिया है
 
 //Object that stores values of minimum and maximum angle for a value
 const rotationValues = [
@@ -72,7 +72,7 @@ const valueGenerator = (angleValue) => {
 
             // Add the won value to the wallet and update display
             walletAmount += i.value;
-            updateWalletDisplay();
+            // updateWalletDisplay();  // मैंने इसे हटा दिया है
             break;
         }
     }
@@ -82,9 +82,9 @@ const valueGenerator = (angleValue) => {
 let walletAmount = 0;
 
 // Function to update the wallet display
-function updateWalletDisplay() {
-    walletDisplay.textContent = walletAmount;
-}
+// function updateWalletDisplay() {  // मैंने इसे हटा दिया है
+//     walletDisplay.textContent = walletAmount;
+// }
 
 //Spinner count
 let count = 0;
