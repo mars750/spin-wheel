@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spin Wheel App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="container">
-        <canvas id="wheel"></canvas>
-        <button id="spin-btn">Spin</button>
-        <img src="spinner-arrow-.svg" alt="spinner-arrow" />
-      </div>
-      
-      <!-- Wallet Balance -->
-      <div id="wallet-balance" style="margin-top: 20px; font-size: 20px; font-weight: bold;">
-        Wallet: 0
-      </div>
-
-      <!-- Withdraw Button -->
-      <button id="withdraw-btn" style="margin-top: 10px; padding: 10px 20px; font-size: 16px;">Withdraw</button>
-
-      <div id="final-value">
-        <p>Click On The Spin Button To Start</p>
-      </div>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin Wheel App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <canvas id="wheel"></canvas>
+      <button id="spin-btn">Spin</button>
+      <img src="spinner-arrow-.svg" alt="spinner-arrow" />
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
-    <script src="script.js"></script>
-  </body>
+    <!-- Wallet Balance -->
+    <div id="wallet-balance" style="margin-top: 20px; font-size: 20px; font-weight: bold;">
+      Wallet: 0
+    </div>
+
+    <!-- Withdraw Button -->
+    <button id="withdraw-btn" style="margin-top: 10px; padding: 10px 20px; font-size: 16px;">Withdraw</button>
+
+    <!-- Withdraw History -->
+    <div id="withdraw-history" style="margin-top: 20px;">
+      <h3>Withdraw History:</h3>
+      <ul id="history-list"></ul>
+    </div>
+
+    <div id="final-value">
+      <p>Click On The Spin Button To Start</p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
+  <script src="script.js"></script>
+</body>
 </html>
