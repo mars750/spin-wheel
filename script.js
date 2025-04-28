@@ -1,60 +1,8 @@
 const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin-btn");
 const finalValue = document.getElementById("final-value");
-const walletBalance = document.getElementById("wallet-balance");
-const withdrawBtn = document.getElementById("withdraw-btn");
-const historyList = document.getElementById("history-list");
 
-// Initialize wallet and history
-let wallet = parseInt(localStorage.getItem('wallet')) || 0;
-let history = JSON.parse(localStorage.getItem('withdraw_history')) || [];
-
-walletBalance.innerText = `Wallet: ${wallet}`;
-
-// Load history
-const loadHistory = () => {
-  historyList.innerHTML = "";
-  history.forEach((entry) => {
-    const li = document.createElement("li");
-    li.innerText = `Withdrawn ₹${entry.amount} at ${entry.time}`;
-    historyList.appendChild(li);
-  });
-};
-loadHistory();
-
-// Update wallet
-const updateWallet = (amount) => {
-  wallet += amount;
-  localStorage.setItem('wallet', wallet);
-  walletBalance.innerText = `Wallet: ${wallet}`;
-};
-
-// Withdraw wallet
-withdrawBtn.addEventListener("click", () => {
-  const minWithdraw = 10; // Minimum wallet needed to withdraw
-  if (wallet >= minWithdraw) {
-    alert(`Withdrawal Successful! You withdrew ₹${wallet}.`);
-
-    // Add to history
-    const now = new Date();
-    const entry = {
-      amount: wallet,
-      time: now.toLocaleString(),
-    };
-    history.push(entry);
-    localStorage.setItem('withdraw_history', JSON.stringify(history));
-    loadHistory();
-
-    // Reset wallet
-    wallet = 0;
-    localStorage.setItem('wallet', wallet);
-    walletBalance.innerText = `Wallet: ${wallet}`;
-  } else {
-    alert(`Minimum ₹${minWithdraw} required to withdraw!`);
-  }
-});
-
-// Rotation values
+// Object that stores values of minimum and maximum angle for a value
 const rotationValues = [
   { minDegree: 0, maxDegree: 30, value: 2 },
   { minDegree: 31, maxDegree: 90, value: 1 },
@@ -65,61 +13,96 @@ const rotationValues = [
   { minDegree: 331, maxDegree: 360, value: 2 },
 ];
 
+// Size of each piece
 const data = [16, 16, 16, 16, 16, 16];
-var pieColors = ["#8b35bc", "#b163da", "#8b35bc", "#b163da", "#8b35bc", "#b163da"];
 
+// Background color for each piece
+var pieColors = [
+  "#8b35bc",
+  "#b163da",
+  "#8b35bc",
+  "#b163da",
+  "#8b35bc",
+  "#b163da",
+];
+
+// Create chart
 let myChart = new Chart(wheel, {
+  // Plugin for displaying text on pie chart
   plugins: [ChartDataLabels],
+  // Chart Type Pie
   type: "pie",
   data: {
+    // Labels(values which are to be displayed on chart)
     labels: [1, 2, 3, 4, 5, 6],
-    datasets: [{ backgroundColor: pieColors, data: data }],
+    // Settings for dataset/pie
+    datasets: [
+      {
+        backgroundColor: pieColors,
+        data: data,
+      },
+    ],
   },
   options: {
+    // Responsive chart
     responsive: true,
     animation: { duration: 0 },
     plugins: {
+      // Hide tooltip and legend
       tooltip: false,
-      legend: { display: false },
+      legend: {
+        display: false,
+      },
+      // Display labels inside pie chart
       datalabels: {
         color: "#ffffff",
         formatter: (_, context) => context.chart.data.labels[context.dataIndex],
         font: { size: 24 },
       },
     },
+    // Add initial rotation
+    rotation: 0,
   },
 });
 
-// Value Generator
+// Display value based on the randomAngle
 const valueGenerator = (angleValue) => {
   for (let i of rotationValues) {
+    // If the angleValue is between min and max then display it
     if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
       finalValue.innerHTML = `<p>Value: ${i.value}</p>`;
-      updateWallet(i.value);
       spinBtn.disabled = false;
       break;
     }
   }
 };
 
+// Spinner count
 let count = 0;
+// 100 rotations for animation and last rotation for result
 let resultValue = 101;
-
-// Spin Button Click
+// Start spinning
 spinBtn.addEventListener("click", () => {
   spinBtn.disabled = true;
+  // Empty final value
   finalValue.innerHTML = `<p>Good Luck!</p>`;
+  // Generate random degrees to stop at
   let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
-
+  // Interval for rotation animation
   let rotationInterval = window.setInterval(() => {
+    // Set rotation for piechart
+    /*
+    Initially to make the piechart rotate faster we set resultValue to 101 so it rotates 101 degrees at a time and this reduces by 1 with every count. Eventually on last rotation we rotate by 1 degree at a time.
+    */
     myChart.options.rotation = myChart.options.rotation + resultValue;
+    // Update chart with new value;
     myChart.update();
-
+    // If rotation>360 reset it back to 0
     if (myChart.options.rotation >= 360) {
+      myChart.options.rotation = myChart.options.rotation - 360; // Corrected reset
       count += 1;
       resultValue -= 5;
-      myChart.options.rotation = 0;
-    } else if (count > 15 && myChart.options.rotation == randomDegree) {
+    } else if (count > 15 && myChart.options.rotation >= randomDegree - 5 && myChart.options.rotation <= randomDegree + 5) { // Added tolerance
       valueGenerator(randomDegree);
       clearInterval(rotationInterval);
       count = 0;
