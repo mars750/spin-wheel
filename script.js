@@ -3,7 +3,11 @@ const spinBtn = document.getElementById("spin-btn");
 const finalValue = document.getElementById("final-value");
 const walletBtn = document.getElementById("wallet-btn");
 const withdrawBtn = document.getElementById("withdraw-btn");
-//const walletDisplay = document.querySelector("#wallet-display span"); // Get the span to update  // मैंने इसे हटा दिया है
+const currentCoins = document.getElementById("current-coins");
+const withdrawForm = document.getElementById("withdraw-form");
+const upiIdInput = document.getElementById("upi-id");
+const withdrawAmountInput = document.getElementById("withdraw-amount");
+const confirmWithdrawBtn = document.getElementById("confirm-withdraw-btn");
 
 //Object that stores values of minimum and maximum angle for a value
 const rotationValues = [
@@ -72,7 +76,7 @@ const valueGenerator = (angleValue) => {
 
             // Add the won value to the wallet and update display
             walletAmount += i.value;
-            // updateWalletDisplay();  // मैंने इसे हटा दिया है
+            updateWalletDisplay();
             break;
         }
     }
@@ -82,9 +86,9 @@ const valueGenerator = (angleValue) => {
 let walletAmount = 0;
 
 // Function to update the wallet display
-// function updateWalletDisplay() {  // मैंने इसे हटा दिया है
-//     walletDisplay.textContent = walletAmount;
-// }
+function updateWalletDisplay() {
+    currentCoins.textContent = walletAmount;
+}
 
 //Spinner count
 let count = 0;
@@ -122,10 +126,34 @@ spinBtn.addEventListener("click", () => {
 
 // Wallet button click event (show wallet amount)
 walletBtn.addEventListener("click", () => {
-    alert(`Your current wallet amount is: ${walletAmount}`);
+    // alert(`Your current wallet amount is: ${walletAmount}`);
+    withdrawForm.style.display = "none"; // Hide withdraw form
+    alert(`Your current wallet amount is: ${walletAmount} coins`); // Show coins in alert
 });
 
-// Withdraw button click event (you can add withdraw functionality here)
+// Withdraw button click event (show withdraw form)
 withdrawBtn.addEventListener("click", () => {
-    alert("Withdrawal functionality not implemented yet.");
+    withdrawForm.style.display = "block";
+});
+
+// Confirm Withdraw button click event
+confirmWithdrawBtn.addEventListener("click", () => {
+    const upiId = upiIdInput.value;
+    const withdrawAmount = parseInt(withdrawAmountInput.value);
+
+    if (upiId && withdrawAmount > 0 && walletAmount >= withdrawAmount) {
+        walletAmount -= withdrawAmount;
+        updateWalletDisplay();
+        alert(`Withdrawal successful! ${withdrawAmount} coins sent to ${upiId}`);
+        // Clear input fields
+        upiIdInput.value = "";
+        withdrawAmountInput.value = "";
+        withdrawForm.style.display = "none"; // Hide withdraw form after successful withdrawal
+    } else if (!upiId) {
+        alert("Please enter your UPI ID.");
+    } else if (withdrawAmount <= 0) {
+        alert("Please enter a valid withdrawal amount.");
+    } else {
+        alert("Insufficient coins.");
+    }
 });
