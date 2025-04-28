@@ -22,6 +22,16 @@
             <button id="wallet-btn">Wallet</button>
             <button id="withdraw-btn">Withdraw</button>
         </div>
+        <div id="wallet-info">
+            <p>Wallet: <span id="current-coins">0</span> coins</p>
+        </div>
+        <div id="withdraw-form" style="display: none;">
+            <label for="upi-id">UPI ID:</label>
+            <input type="text" id="upi-id" placeholder="Enter your UPI ID">
+            <label for="withdraw-amount">Coins to Withdraw:</label>
+            <input type="number" id="withdraw-amount" placeholder="Enter amount">
+            <button id="confirm-withdraw-btn">Withdraw</button>
+        </div>
         </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
