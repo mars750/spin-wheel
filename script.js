@@ -2,11 +2,57 @@ const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin-btn");
 const finalValue = document.getElementById("final-value");
 const walletBalance = document.getElementById("wallet-balance");
-const withdrawBtn = document.getElementById("withdraw-btn"); // Withdraw Button
+const withdrawBtn = document.getElementById("withdraw-btn");
+const historyList = document.getElementById("history-list");
 
-// Initialize wallet
+// Initialize wallet and history
 let wallet = parseInt(localStorage.getItem('wallet')) || 0;
+let history = JSON.parse(localStorage.getItem('withdraw_history')) || [];
+
 walletBalance.innerText = `Wallet: ${wallet}`;
+
+// Load history
+const loadHistory = () => {
+  historyList.innerHTML = "";
+  history.forEach((entry) => {
+    const li = document.createElement("li");
+    li.innerText = `Withdrawn ₹${entry.amount} at ${entry.time}`;
+    historyList.appendChild(li);
+  });
+};
+loadHistory();
+
+// Update wallet
+const updateWallet = (amount) => {
+  wallet += amount;
+  localStorage.setItem('wallet', wallet);
+  walletBalance.innerText = `Wallet: ${wallet}`;
+};
+
+// Withdraw wallet
+withdrawBtn.addEventListener("click", () => {
+  const minWithdraw = 10; // Minimum wallet needed to withdraw
+  if (wallet >= minWithdraw) {
+    alert(`Withdrawal Successful! You withdrew ₹${wallet}.`);
+
+    // Add to history
+    const now = new Date();
+    const entry = {
+      amount: wallet,
+      time: now.toLocaleString(),
+    };
+    history.push(entry);
+    localStorage.setItem('withdraw_history', JSON.stringify(history));
+    loadHistory();
+
+    // Reset wallet
+    wallet = 0;
+    localStorage.setItem('wallet', wallet);
+    walletBalance.innerText = `Wallet: ${wallet}`;
+  } else {
+    alert(`Minimum ₹${minWithdraw} required to withdraw!`);
+  }
+});
 
 // Rotation values
 const rotationValues = [
@@ -18,6 +64,7 @@ const rotationValues = [
   { minDegree: 271, maxDegree: 330, value: 3 },
   { minDegree: 331, maxDegree: 360, value: 2 },
 ];
+
 const data = [16, 16, 16, 16, 16, 16];
 var pieColors = ["#8b35bc", "#b163da", "#8b35bc", "#b163da", "#8b35bc", "#b163da"];
 
@@ -41,26 +88,6 @@ let myChart = new Chart(wheel, {
       },
     },
   },
-});
-
-// Update wallet
-const updateWallet = (amount) => {
-  wallet += amount;
-  localStorage.setItem('wallet', wallet);
-  walletBalance.innerText = `Wallet: ${wallet}`;
-};
-
-// Withdraw wallet
-withdrawBtn.addEventListener("click", () => {
-  const minWithdraw = 10; // Minimum wallet needed to withdraw
-  if (wallet >= minWithdraw) {
-    alert(`Withdrawal Successful! You withdrew ${wallet} points.`);
-    wallet = 0;
-    localStorage.setItem('wallet', wallet);
-    walletBalance.innerText = `Wallet: ${wallet}`;
-  } else {
-    alert(`Minimum ${minWithdraw} points required to withdraw!`);
-  }
 });
 
 // Value Generator
