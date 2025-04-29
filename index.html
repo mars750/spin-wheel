@@ -1,39 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spin Wheel App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
+    <title>Play and Earn</title>
+    <style>
+        /* Basic styling for demonstration */
+        .container {
+            width: 300px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: purple;
+            margin: 10px auto;
+            position: relative;
+            /* ... aapki wheel ki styling ... */
+        }
+        .spin-button {
+            background-color: gold;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .wallet-info {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .value-display {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: green;
+        }
+        .withdraw-section {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .withdraw-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .withdraw-input {
+            padding: 5px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .coin-value-button {
+            background-color: #f0ad4e;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .coin-value-popup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .coin-value-popup button {
+            display: block;
+            margin-top: 5px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+        .close-popup {
+            float: right;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <div class="wrapper">
-        <div class="container">
-            <canvas id="wheel"></canvas>
-            <button id="spin-btn">Spin</button>
-            <img src="spinner-arrow-.svg" alt="spinner-arrow" />
+    <div class="container">
+        <div class="wheel">
+            <div class="spin-button">SPIN</div>
+            </div>
+        <div class="wallet-info">
+            Wallet: <span id="wallet-balance">11</span> coins
         </div>
-        <div id="final-value">
-            <p>Click On The Spin Button To Start</p>
+        <div class="value-display">
+            Value: ₹<span id="coin-value">1.10</span>
         </div>
-        <div class="wallet-actions">
-            <button id="wallet-btn">Wallet</button>
-            <button id="withdraw-btn">Withdraw</button>
-        </div>
-        <div id="wallet-info">
-            <p>Wallet: <span id="current-coins">0</span> coins</p>
-        </div>
-        <div id="withdraw-form" style="display: none;">
-            <label for="upi-id">UPI ID:</label>
-            <input type="text" id="upi-id" placeholder="Enter your UPI ID">
-            <label for="withdraw-amount">Coins to Withdraw:</label>
-            <input type="number" id="withdraw-amount" placeholder="Enter amount">
-            <button id="confirm-withdraw-btn">Withdraw</button>
+
+        <button id="show-coin-value" class="coin-value-button">Coin Value</button>
+
+        <div id="coin-value-popup" class="coin-value-popup">
+            <span class="close-popup">&times;</span>
+            <p>Coin Value:</p>
+            <button data-coins="10" data-value="1">10 Coins = ₹1</button>
+            <button data-coins="20" data-value="2">20 Coins = ₹2</button>
+            <button data-coins="50" data-value="5">50 Coins = ₹5</button>
+            <button data-coins="100" data-value="10">100 Coins = ₹10</button>
+            </div>
+
+        <div class="withdraw-section">
+            <h3>Withdraw</h3>
+            <div>
+                <label for="upi-id">UPI ID:</label><br>
+                <input type="text" id="upi-id" class="withdraw-input" placeholder="Enter your UPI ID">
+            </div>
+            <div>
+                <label for="withdraw-amount">Coins to Withdraw:</label><br>
+                <input type="number" id="withdraw-amount" class="withdraw-input" placeholder="Enter amount">
+            </div>
+            <button id="withdraw-button" class="withdraw-button">Withdraw</button>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
-    <script src="script.js"></script>
+    <script>
+        // JavaScript code
+        const walletBalanceSpan = document.getElementById('wallet-balance');
+        const coinValueSpan = document.getElementById('coin-value');
+        const withdrawButton = document.getElementById('withdraw-button');
+        const withdrawInput = document.getElementById('withdraw-amount');
+        const upiIdInput = document.getElementById('upi-id');
+        const showCoinValueButton = document.getElementById('show-coin-value');
+        const coinValuePopup = document.getElementById('coin-value-popup');
+        const closePopup = coinValuePopup.querySelector('.close-popup');
+        const coinValueOptions = coinValuePopup.querySelectorAll('button[data-coins]');
+
+        // Dummy coin to INR rate (aap ise apne backend se dynamic karein)
+        const coinToINRRate = 0.1; // 1 coin = ₹0.10
+
+        function updateCoinValueDisplay() {
+            const balance = parseInt(walletBalanceSpan.textContent);
+            const value = (balance * coinToINRRate).toFixed(2);
+            coinValueSpan.textContent = value;
+        }
+
+        // Initial update of coin value
+        updateCoinValueDisplay();
+
+        withdrawButton.addEventListener('click', () => {
+            const upiId = upiIdInput.value;
+            const amountToWithdraw = parseInt(withdrawInput.value);
+            const currentBalance = parseInt(walletBalanceSpan.textContent);
+
+            if (!upiId) {
+                alert('Please enter your UPI ID.');
+                return;
+            }
+
+            if (isNaN(amountToWithdraw) || amountToWithdraw <= 0) {
+                alert('Please enter a valid amount to withdraw.');
+                return;
+            }
+
+            const coinsToWithdraw = amountToWithdraw / coinToINRRate;
+
+            if (coinsToWithdraw > currentBalance) {
+                alert('Insufficient balance.');
+                return;
+            }
+
+            // Yahan aapko backend mein withdrawal request bhejni hogi
+            alert(`Withdrawal requested for ₹${amountToWithdraw} ( ${coinsToWithdraw} coins ) to UPI ID: ${upiId}`);
+
+            // Agar withdrawal successful hota hai toh wallet balance update karein
+            const newBalance = currentBalance - coinsToWithdraw;
+            walletBalanceSpan.textContent = newBalance;
+            updateCoinValueDisplay();
+            withdrawInput.value = ''; // Input field clear karein
+        });
+
+        showCoinValueButton.addEventListener('click', () => {
+            coinValuePopup.style.display = 'block';
+        });
+
+        closePopup.addEventListener('click', () => {
+            coinValuePopup.style.display = 'none';
+        });
+
+        coinValueOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const coins = parseInt(option.dataset.coins);
+                const value = parseFloat(option.dataset.value);
+                alert(`${coins} Coins = ₹${value}`);
+                coinValuePopup.style.display = 'none';
+            });
+        });
+
+        // **Important:** Game exit par coins save karne ka logic aapko implement karna hoga.
+        // Aap local storage, session storage ya backend database ka istemaal kar sakte hain.
+        // Jab page load ho toh saved balance retrieve karein aur walletBalanceSpan.textContent ko update karein.
+    </script>
 </body>
 </html>
