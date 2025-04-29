@@ -1,158 +1,60 @@
-/* सामान्य स्टाइल (पहले से मौजूद)  */
-
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-}
-
 body {
-    height: 100vh;
-    background: linear-gradient(135deg, #c3a3f1, #6414e9);
-}
-
-.wrapper {
-    width: 90%;
-    max-width: 34.37em;
-    max-height: 90vh;
-    background-color: #ffffff;
-    position: absolute;
-    transform: translate(-50%, -50%);
-    top: 50%;
-    left: 50%;
-    padding: 2em; /* थोड़ा कम पैडिंग  */
-    border-radius: 1em;
-    box-shadow: 0 4em 5em rgba(27, 8, 53, 0.2);
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+    margin: 0;
 }
 
 .container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.wheel-container {
     position: relative;
-    width: 100%;
-    height: 100%;
+    margin-bottom: 20px;
 }
 
 #wheel {
-    max-height: inherit;
-    width: inherit;
-    top: 0;
-    padding: 0;
-}
-
-@keyframes rotate {
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-#spin-btn {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    top: 50%;
-    left: 50%;
-    height: 22%; /* छोटा आकार  */
-    width: 22%; /* छोटा आकार  */
+    border: 1px solid #ccc;
     border-radius: 50%;
-    cursor: pointer;
-    border: 0;
-    background: radial-gradient(#fdcf3b 50%, #d88a40 85%);
-    color: #c66e16;
-    text-transform: uppercase;
-    font-size: 1.3em; /* छोटा फ़ॉन्ट  */
-    letter-spacing: 0.1em;
-    font-weight: 600;
 }
 
-img {
+.arrow {
     position: absolute;
-    width: 3em; /* छोटा तीर  */
-    top: 45%;
-    right: -6%; /* थोड़ा और अंदर  */
+    top: 50%;
+    right: -20px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 20px solid #333;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
 }
 
-#final-value {
-    font-size: 1.2em; /* छोटा फ़ॉन्ट  */
-    text-align: center;
-    margin-top: 1em; /* कम मार्जिन  */
-    color: #202020;
-    font-weight: 500;
-}
-
-@media screen and (max-width: 768px) {
-    .wrapper {
-        font-size: 12px;
-    }
-
-    img {
-        right: -5%;
-    }
-}
-
-/* वॉलेट और विथड्रॉ सेक्शन स्टाइल  */
-
-.wallet-actions {
-    display: flex;
-    justify-content: center;
-    margin-top: 1em; /* कम मार्जिन  */
-}
-
-.wallet-actions button {
-    padding: 0.5em 1em; /* छोटे बटन  */
-    margin: 0 0.5em; /* कम मार्जिन  */
-    border: none;
-    border-radius: 0.3em; /* कम गोल  */
-    background-color: #6414e9;
+#spinBtn {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #007bff;
     color: white;
-    font-size: 0.8em; /* छोटा फ़ॉन्ट  */
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.wallet-actions button:hover {
-    background-color: #c3a3f1;
-    color: #202020;
+#spinBtn:hover {
+    background-color: #0056b3;
 }
 
-#wallet-info {
-    font-size: 0.9em; /* छोटा फ़ॉन्ट  */
-    text-align: left; /* बाएं में  */
-    margin-top: 0.5em; /* कम मार्जिन  */
-    color: #202020;
-    font-weight: 500;
-}
-
-#withdraw-form {
-    margin-top: 0.5em; /* कम मार्जिन  */
-    text-align: left; /* बाएं में  */
-}
-
-#withdraw-form label {
-    display: block;
-    margin-bottom: 0.2em; /* कम मार्जिन  */
-    font-size: 0.8em; /* छोटा फ़ॉन्ट  */
+.result {
+    margin-top: 20px;
+    font-size: 1.2em;
     font-weight: bold;
-}
-
-#withdraw-form input {
-    width: 100%; /* पूरी चौड़ाई  */
-    padding: 0.3em; /* कम पैडिंग  */
-    margin-bottom: 0.5em; /* कम मार्जिन  */
-    font-size: 0.8em; /* छोटा फ़ॉन्ट  */
-    border: 1px solid #ccc; /* बॉर्डर  */
-    border-radius: 0.3em; /* कम गोल  */
-}
-
-#confirm-withdraw-btn {
-    padding: 0.3em 0.6em; /* छोटा बटन  */
-    background-color: #6414e9;
-    color: white;
-    border: none;
-    border-radius: 0.3em; /* कम गोल  */
-    cursor: pointer;
-    font-size: 0.8em; /* छोटा फ़ॉन्ट  */
-}
-
-#confirm-withdraw-btn:hover {
-    background-color: #c3a3f1;
-    color: #202020;
 }
