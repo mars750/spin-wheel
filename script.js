@@ -9,7 +9,6 @@ const upiIdInput = document.getElementById("upi-id");
 const withdrawAmountInput = document.getElementById("withdraw-amount");
 const confirmWithdrawBtn = document.getElementById("confirm-withdraw-btn");
 
-//Object that stores values of minimum and maximum angle for a value
 const rotationValues = [
     { minDegree: 0, maxDegree: 30, value: 2 },
     { minDegree: 31, maxDegree: 90, value: 1 },
@@ -19,9 +18,9 @@ const rotationValues = [
     { minDegree: 271, maxDegree: 330, value: 3 },
     { minDegree: 331, maxDegree: 360, value: 2 },
 ];
-//Size of each piece
+
 const data = [16, 16, 16, 16, 16, 16];
-//background color for each piece
+
 var pieColors = [
     "#8b35bc",
     "#b163da",
@@ -30,16 +29,12 @@ var pieColors = [
     "#8b35bc",
     "#b163da",
 ];
-//Create chart
+
 let myChart = new Chart(wheel, {
-    //Plugin for displaying text on pie chart
     plugins: [ChartDataLabels],
-    //Chart Type Pie
     type: "pie",
     data: {
-        //Labels(values which are to be displayed on chart)
         labels: [1, 2, 3, 4, 5, 6],
-        //Settings for dataset/pie
         datasets: [
             {
                 backgroundColor: pieColors,
@@ -48,16 +43,11 @@ let myChart = new Chart(wheel, {
         ],
     },
     options: {
-        //Responsive chart
         responsive: true,
         animation: { duration: 0 },
         plugins: {
-            //hide tooltip and legend
             tooltip: false,
-            legend: {
-                display: false,
-            },
-            //display labels inside pie chart
+            legend: { display: false },
             datalabels: {
                 color: "#ffffff",
                 formatter: (_, context) => context.chart.data.labels[context.dataIndex],
@@ -66,15 +56,18 @@ let myChart = new Chart(wheel, {
         },
     },
 });
-//display value based on the randomAngle
+
+let walletAmount = 0;
+
+function updateWalletDisplay() {
+    currentCoins.textContent = walletAmount;
+}
+
 const valueGenerator = (angleValue) => {
     for (let i of rotationValues) {
-        //if the angleValue is between min and max then display it
         if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
             finalValue.innerHTML = `<p>Value: ${i.value}</p>`;
             spinBtn.disabled = false;
-
-            // Add the won value to the wallet and update display
             walletAmount += i.value;
             updateWalletDisplay();
             break;
@@ -82,35 +75,17 @@ const valueGenerator = (angleValue) => {
     }
 };
 
-// Variable to store wallet amount
-let walletAmount = 0;
-
-// Function to update the wallet display
-function updateWalletDisplay() {
-    currentCoins.textContent = walletAmount;
-}
-
-//Spinner count
 let count = 0;
-//100 rotations for animation and last rotation for result
 let resultValue = 101;
-//Start spinning
+
 spinBtn.addEventListener("click", () => {
     spinBtn.disabled = true;
-    //Empty final value
     finalValue.innerHTML = `<p>Good Luck!</p>`;
-    //Generate random degrees to stop at
     let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
-    //Interval for rotation animation
     let rotationInterval = window.setInterval(() => {
-        //Set rotation for piechart
-        /*
-        Initially to make the piechart rotate faster we set resultValue to 101 so it rotates 101 degrees at a time and this reduces by 1 with every count. Eventually on last rotation we rotate by 1 degree at a time.
-        */
         myChart.options.rotation = myChart.options.rotation + resultValue;
-        //Update chart with new value;
         myChart.update();
-        //If rotation>360 reset it back to 0
+
         if (myChart.options.rotation >= 360) {
             count += 1;
             resultValue -= 5;
@@ -124,36 +99,37 @@ spinBtn.addEventListener("click", () => {
     }, 10);
 });
 
-// Wallet button click event (show wallet amount)
 walletBtn.addEventListener("click", () => {
-    // alert(`Your current wallet amount is: ${walletAmount}`);
-    withdrawForm.style.display = "none"; // Hide withdraw form
-    alert(`Your current wallet amount is: ${walletAmount} coins`); // Show coins in alert
+    withdrawForm.style.display = "none";
+    alert(`Your current wallet amount is: ${walletAmount} coins`);
 });
 
-// Withdraw button click event (show withdraw form)
 withdrawBtn.addEventListener("click", () => {
     withdrawForm.style.display = "block";
 });
 
-// Confirm Withdraw button click event
 confirmWithdrawBtn.addEventListener("click", () => {
-    const upiId = upiIdInput.value;
+    const upiId = upiIdInput.value.trim();
     const withdrawAmount = parseInt(withdrawAmountInput.value);
 
-    if (upiId && withdrawAmount > 0 && walletAmount >= withdrawAmount) {
+    const minWithdrawCoins = 1000;
+    const coinToRupeeRate = 0.01;
+
+    if (!upiId) {
+        alert("कृपया अपना UPI ID दर्ज करें।");
+    } else if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
+        alert("कृपया सही withdrawal amount दर्ज करें।");
+    } else if (withdrawAmount < minWithdrawCoins) {
+        alert(`न्यूनतम ${minWithdrawCoins} coins की आवश्यकता है withdrawal के लिए।`);
+    } else if (walletAmount < withdrawAmount) {
+        alert("आपके पास पर्याप्त coins नहीं हैं।");
+    } else {
+        const rupees = (withdrawAmount * coinToRupeeRate).toFixed(2);
         walletAmount -= withdrawAmount;
         updateWalletDisplay();
-        alert(`Withdrawal successful! ${withdrawAmount} coins sent to ${upiId}`);
-        // Clear input fields
+        alert(`₹${rupees} (${withdrawAmount} coins) सफलतापूर्वक ${upiId} पर भेज दिए गए।`);
         upiIdInput.value = "";
         withdrawAmountInput.value = "";
-        withdrawForm.style.display = "none"; // Hide withdraw form after successful withdrawal
-    } else if (!upiId) {
-        alert("Please enter your UPI ID.");
-    } else if (withdrawAmount <= 0) {
-        alert("Please enter a valid withdrawal amount.");
-    } else {
-        alert("Insufficient coins.");
+        withdrawForm.style.display = "none";
     }
 });
