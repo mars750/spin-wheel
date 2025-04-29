@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spin Wheel App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin Wheel App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-    <div class="wrapper">
-        <div class="container">
-            <canvas id="wheel"></canvas>
-            <button id="spin-btn">Spin</button>
-            <img src="spinner-arrow-.svg" alt="spinner-arrow" />
-        </div>
-        <div id="final-value">
-            <p>Click On The Spin Button To Start</p>
-        </div>
-        <div class="wallet-actions">
-            <button id="wallet-btn">Wallet</button>
-            <button id="withdraw-btn">Withdraw</button>
-        </div>
-        <div id="wallet-info">
-            <p>Wallet: <span id="current-coins">0</span> coins</p>
-        </div>
-        <div id="withdraw-form" style="display: none;">
-            <label for="upi-id">UPI ID:</label>
-            <input type="text" id="upi-id" placeholder="Enter your UPI ID">
-            <label for="withdraw-amount">Coins to Withdraw:</label>
-            <input type="number" id="withdraw-amount" placeholder="Enter coins to withdraw">
-            <button id="confirm-withdraw-btn">Confirm Withdraw</button>
-        </div>
+  <div class="wrapper">
+    <div class="container">
+      <img src="spinner-arrow-.svg" alt="spinner-arrow" />
+      <canvas id="wheel"></canvas>
+    </div>
+    <button id="spin-btn">Spin</button>
+
+    <div id="final-value">
+      <p>Click On The Spin Button To Start</p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
-    <script src="script.js"></script>
+    <div class="wallet-actions">
+      <button id="wallet-btn">Wallet</button>
+      <button id="withdraw-btn">Withdraw</button>
+    </div>
+
+    <div id="wallet-info">
+      <p>Wallet: <span id="current-coins">0</span> coins</p>
+    </div>
+
+    <div id="withdraw-form" style="display: none;">
+      <label for="upi-id">UPI ID:</label>
+      <input type="text" id="upi-id" placeholder="Enter your UPI ID">
+      <label for="withdraw-amount">Coins to Withdraw:</label>
+      <input type="number" id="withdraw-amount" placeholder="Enter amount">
+      <button id="confirm-withdraw-btn">Withdraw</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
+  <script src="script.js"></script>
 </body>
+
 </html>
