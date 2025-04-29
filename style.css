@@ -1,60 +1,124 @@
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap');
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body */
 body {
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f4f4f4;
-    margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #74ebd5, #acb6e5);
+  font-family: 'Poppins', sans-serif;
 }
 
+/* Wrapper */
+.wrapper {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
+}
+
+/* Wheel Container */
 .container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.wheel-container {
-    position: relative;
-    margin-bottom: 20px;
+  position: relative;
 }
 
 #wheel {
-    border: 1px solid #ccc;
-    border-radius: 50%;
+  width: 300px;
+  height: 300px;
 }
 
-.arrow {
-    position: absolute;
-    top: 50%;
-    right: -20px;
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-left: 20px solid #333;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
+/* Spin Button */
+#spin-btn {
+  margin-top: 20px;
+  padding: 10px 30px;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
-#spinBtn {
-    padding: 10px 20px;
-    font-size: 18px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+#spin-btn:hover {
+  background-color: #45a049;
 }
 
-#spinBtn:hover {
-    background-color: #0056b3;
+/* Spinner Arrow */
+.container img {
+  position: absolute;
+  top: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  z-index: 10;
 }
 
-.result {
-    margin-top: 20px;
-    font-size: 1.2em;
-    font-weight: bold;
+/* Wallet */
+#wallet-balance {
+  margin-top: 20px;
+  font-size: 22px;
+  color: #333333;
+}
+
+/* Withdraw Button */
+#withdraw-btn {
+  margin-top: 15px;
+  padding: 10px 25px;
+  background-color: #ff5722;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#withdraw-btn:hover {
+  background-color: #e64a19;
+}
+
+/* Final Result Text */
+#final-value p {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333333;
+}
+
+/* Withdraw History */
+#withdraw-history {
+  margin-top: 25px;
+  text-align: left;
+}
+
+#withdraw-history h3 {
+  font-size: 20px;
+  color: #444444;
+  margin-bottom: 10px;
+}
+
+#history-list {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+#history-list li {
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #555555;
 }
