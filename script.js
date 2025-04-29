@@ -9,154 +9,125 @@ const upiIdInput = document.getElementById("upi-id");
 const withdrawAmountInput = document.getElementById("withdraw-amount");
 const confirmWithdrawBtn = document.getElementById("confirm-withdraw-btn");
 
-//Object that stores values of minimum and maximum angle for a value
+// Coin to Rupee Conversion Settings
+const coinToRupeeRate = 100; // 100 coins = 1 Rupee
+const minimumWithdrawCoins = 1000; // Minimum coins required for withdrawal
+
 const rotationValues = [
-{ minDegree: 0, maxDegree: 30, value: 2 },
-{ minDegree: 31, maxDegree: 90, value: 1 },
-{ minDegree: 91, maxDegree: 150, value: 6 },
-{ minDegree: 151, maxDegree: 210, value: 5 },
-{ minDegree: 211, maxDegree: 270, value: 4 },
-{ minDegree: 271, maxDegree: 330, value: 3 },
-{ minDegree: 331, maxDegree: 360, value: 2 },
+    { minDegree: 0, maxDegree: 30, value: 2 },
+    { minDegree: 31, maxDegree: 90, value: 1 },
+    { minDegree: 91, maxDegree: 150, value: 6 },
+    { minDegree: 151, maxDegree: 210, value: 5 },
+    { minDegree: 211, maxDegree: 270, value: 4 },
+    { minDegree: 271, maxDegree: 330, value: 3 },
+    { minDegree: 331, maxDegree: 360, value: 2 },
 ];
-//Size of each piece
 const data = [16, 16, 16, 16, 16, 16];
-//background color for each piece
-var pieColors = [
-"#8b35bc",
-"#b163da",
-"#8b35bc",
-"#b163da",
-"#8b35bc",
-"#b163da",
-];
-//Create chart
+const pieColors = ["#8b35bc", "#b163da", "#8b35bc", "#b163da", "#8b35bc", "#b163da"];
+
 let myChart = new Chart(wheel, {
-//Plugin for displaying text on pie chart
-plugins: [ChartDataLabels],
-//Chart Type Pie
-type: "pie",
-data: {
-//Labels(values which are to be displayed on chart)
-labels: [1, 2, 3, 4, 5, 6],
-//Settings for dataset/pie
-datasets: [
-{
-backgroundColor: pieColors,
-data: data,
-},
-],
-},
-options: {
-//Responsive chart
-responsive: true,
-animation: { duration: 0 },
-plugins: {
-//hide tooltip and legend
-tooltip: false,
-legend: {
-display: false,
-},
-//display labels inside pie chart
-datalabels: {
-color: "#ffffff",
-formatter: (_, context) => context.chart.data.labels[context.dataIndex],
-font: { size: 24 },
-},
-},
-},
+    plugins: [ChartDataLabels],
+    type: "pie",
+    data: {
+        labels: [1, 2, 3, 4, 5, 6],
+        datasets: [{ backgroundColor: pieColors, data: data }],
+    },
+    options: {
+        responsive: true,
+        animation: { duration: 0 },
+        plugins: {
+            tooltip: false,
+            legend: { display: false },
+            datalabels: {
+                color: "#ffffff",
+                formatter: (_, context) => context.chart.data.labels[context.dataIndex],
+                font: { size: 24 },
+            },
+        },
+    },
 });
-//display value based on the randomAngle
+
 const valueGenerator = (angleValue) => {
-for (let i of rotationValues) {
-//if the angleValue is between min and max then display it
-if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
-finalValue.innerHTML = <p>Value: ${i.value}</p>;
-spinBtn.disabled = false;
-
-// Add the won value to the wallet and update display  
-        walletAmount += i.value;  
-        updateWalletDisplay();  
-        break;  
-    }  
-}
-
+    for (let i of rotationValues) {
+        if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
+            finalValue.innerHTML = `<p>Value: ${i.value}</p>`;
+            spinBtn.disabled = false;
+            walletAmount += i.value;
+            updateWalletDisplay();
+            break;
+        }
+    }
 };
 
-// Variable to store wallet amount
 let walletAmount = 0;
 
-// Function to update the wallet display
 function updateWalletDisplay() {
-currentCoins.textContent = walletAmount;
+    currentCoins.textContent = walletAmount;
 }
 
-//Spinner count
 let count = 0;
-//100 rotations for animation and last rotation for result
 let resultValue = 101;
-//Start spinning
+
 spinBtn.addEventListener("click", () => {
-spinBtn.disabled = true;
-//Empty final value
-finalValue.innerHTML = <p>Good Luck!</p>;
-//Generate random degrees to stop at
-let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
-//Interval for rotation animation
-let rotationInterval = window.setInterval(() => {
-//Set rotation for piechart
-/*
-Initially to make the piechart rotate faster we set resultValue to 101 so it rotates 101 degrees at a time and this reduces by 1 with every count. Eventually on last rotation we rotate by 1 degree at a time.
-*/
-myChart.options.rotation = myChart.options.rotation + resultValue;
-//Update chart with new value;
-myChart.update();
-//If rotation>360 reset it back to 0
-if (myChart.options.rotation >= 360) {
-count += 1;
-resultValue -= 5;
-myChart.options.rotation = 0;
-} else if (count > 15 && myChart.options.rotation == randomDegree) {
-valueGenerator(randomDegree);
-clearInterval(rotationInterval);
-count = 0;
-resultValue = 101;
-}
-}, 10);
+    spinBtn.disabled = true;
+    finalValue.innerHTML = `<p>Good Luck!</p>`;
+    let randomDegree = Math.floor(Math.random() * 360);
+    let rotationInterval = window.setInterval(() => {
+        myChart.options.rotation = (myChart.options.rotation + resultValue) % 360;
+        myChart.update();
+        if (myChart.options.rotation >= 360) {
+            count++;
+            resultValue -= 5;
+            myChart.options.rotation = 0;
+        } else if (count > 15 && Math.round(myChart.options.rotation) === randomDegree) {
+            valueGenerator(randomDegree);
+            clearInterval(rotationInterval);
+            count = 0;
+            resultValue = 101;
+        }
+    }, 10);
 });
 
-// Wallet button click event (show wallet amount)
+// Wallet Button
 walletBtn.addEventListener("click", () => {
-// alert(Your current wallet amount is: ${walletAmount});
-withdrawForm.style.display = "none"; // Hide withdraw form
-alert(Your current wallet amount is: ${walletAmount} coins); // Show coins in alert
+    withdrawForm.style.display = "none";
+    alert(`Your current wallet amount is: ${walletAmount} coins`);
 });
 
-// Withdraw button click event (show withdraw form)
+// Withdraw Button
 withdrawBtn.addEventListener("click", () => {
-withdrawForm.style.display = "block";
+    withdrawForm.style.display = "block";
 });
 
-// Confirm Withdraw button click event
+// Confirm Withdraw
 confirmWithdrawBtn.addEventListener("click", () => {
-const upiId = upiIdInput.value;
-const withdrawAmount = parseInt(withdrawAmountInput.value);
+    const upiId = upiIdInput.value.trim();
+    const withdrawCoins = parseInt(withdrawAmountInput.value);
 
-if (upiId && withdrawAmount > 0 && walletAmount >= withdrawAmount) {  
-    walletAmount -= withdrawAmount;  
-    updateWalletDisplay();  
-    alert(`Withdrawal successful! ${withdrawAmount} coins sent to ${upiId}`);  
-    // Clear input fields  
-    upiIdInput.value = "";  
-    withdrawAmountInput.value = "";  
-    withdrawForm.style.display = "none"; // Hide withdraw form after successful withdrawal  
-} else if (!upiId) {  
-    alert("Please enter your UPI ID.");  
-} else if (withdrawAmount <= 0) {  
-    alert("Please enter a valid withdrawal amount.");  
-} else {  
-    alert("Insufficient coins.");  
-}
+    if (!upiId) {
+        alert("Please enter your UPI ID.");
+        return;
+    }
+    if (isNaN(withdrawCoins) || withdrawCoins <= 0) {
+        alert("Please enter a valid number of coins to withdraw.");
+        return;
+    }
+    if (walletAmount < withdrawCoins) {
+        alert("You don't have enough coins.");
+        return;
+    }
+    if (withdrawCoins < minimumWithdrawCoins) {
+        alert(`Minimum ${minimumWithdrawCoins} coins required to withdraw.`);
+        return;
+    }
 
+    const rupees = (withdrawCoins / coinToRupeeRate).toFixed(2);
+
+    walletAmount -= withdrawCoins;
+    updateWalletDisplay();
+
+    alert(`Withdrawal successful! ₹${rupees} sent to ${upiId}`);
+    upiIdInput.value = "";
+    withdrawAmountInput.value = "";
+    withdrawForm.style.display = "none";
 });
-
