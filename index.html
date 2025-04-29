@@ -1,47 +1,151 @@
-<!DOCTYPE html>
-<html lang="en">
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap');
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spin Wheel App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-</head>
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-<body>
-  <div class="wrapper">
-    <div class="container">
-      <img src="spinner-arrow-.svg" alt="spinner-arrow" />
-      <canvas id="wheel"></canvas>
-    </div>
-    <button id="spin-btn">Spin</button>
+/* Body */
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #74ebd5, #acb6e5);
+  font-family: 'Poppins', sans-serif;
+}
 
-    <div id="final-value">
-      <p>Click On The Spin Button To Start</p>
-    </div>
+/* Wrapper */
+.wrapper {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
+}
 
-    <div class="wallet-actions">
-      <button id="wallet-btn">Wallet</button>
-      <button id="withdraw-btn">Withdraw</button>
-    </div>
+/* Wheel Container */
+.container {
+  position: relative;
+}
 
-    <div id="wallet-info">
-      <p>Wallet: <span id="current-coins">0</span> coins</p>
-    </div>
+#wheel {
+  width: 300px;
+  height: 300px;
+}
 
-    <div id="withdraw-form" style="display: none;">
-      <label for="upi-id">UPI ID:</label>
-      <input type="text" id="upi-id" placeholder="Enter your UPI ID">
-      <label for="withdraw-amount">Coins to Withdraw:</label>
-      <input type="number" id="withdraw-amount" placeholder="Enter amount">
-      <button id="confirm-withdraw-btn">Withdraw</button>
-    </div>
-  </div>
+/* Spin Button */
+#spin-btn {
+  margin-top: 20px;
+  padding: 10px 30px;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
-  <script src="script.js"></script>
-</body>
+#spin-btn:hover {
+  background-color: #45a049;
+}
 
-</html>
+/* Spinner Arrow (Right Side) */
+.container img {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 10px);
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  z-index: 10;
+}
+
+/* Wallet Actions Container */
+.wallet-actions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column; /* Arrange wallet info and button vertically */
+  align-items: center; /* Center items horizontally */
+  gap: 10px; /* Space between wallet info and withdraw button */
+}
+
+/* Wallet Info */
+.wallet-info {
+  font-size: 18px;
+  color: #2e7d32; /* A nice green to indicate balance */
+  font-weight: 600; /* Make it stand out */
+}
+
+/* Withdraw Button */
+#withdraw-btn {
+  padding: 12px 28px; /* Slightly more padding */
+  background-color: #d32f2f; /* A more vibrant red */
+  color: white;
+  font-size: 17px; /* Slightly larger text */
+  font-weight: bold;
+  border: none;
+  border-radius: 15px; /* More rounded corners */
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  transition: background-color 0.3s ease;
+}
+
+#withdraw-btn:hover {
+  background-color: #b71c1c; /* Darker shade on hover */
+}
+
+/* Final Result Text */
+#final-value p {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333333;
+}
+
+/* Withdraw Form */
+#withdraw-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start; /* Align labels and inputs to the left */
+}
+
+#withdraw-form label {
+  font-size: 16px;
+  color: #555;
+  font-weight: bold;
+}
+
+#withdraw-form input[type="text"],
+#withdraw-form input[type="number"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%; /* Make inputs take full width */
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+#confirm-withdraw-btn {
+  padding: 10px 20px;
+  background-color: #007bff; /* A primary blue color */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+#confirm-withdraw-btn:hover {
+  background-color: #0056b3;
+}
