@@ -67,29 +67,38 @@ body {
   z-index: 10;
 }
 
-/* Wallet */
-#wallet-balance {
+/* Wallet Actions Container */
+.wallet-actions {
   margin-top: 20px;
-  font-size: 22px;
-  color: #333333;
+  display: flex;
+  flex-direction: column; /* Arrange wallet info and button vertically */
+  align-items: center; /* Center items horizontally */
+  gap: 10px; /* Space between wallet info and withdraw button */
+}
+
+/* Wallet Info */
+.wallet-info {
+  font-size: 18px;
+  color: #2e7d32; /* A nice green to indicate balance */
+  font-weight: 600; /* Make it stand out */
 }
 
 /* Withdraw Button */
 #withdraw-btn {
-  margin-top: 15px;
-  padding: 10px 25px;
-  background-color: #ff5722;
+  padding: 12px 28px; /* Slightly more padding */
+  background-color: #d32f2f; /* A more vibrant red */
   color: white;
-  font-size: 16px;
+  font-size: 17px; /* Slightly larger text */
   font-weight: bold;
   border: none;
-  border-radius: 10px;
+  border-radius: 15px; /* More rounded corners */
   cursor: pointer;
-  transition: background 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  transition: background-color 0.3s ease;
 }
 
 #withdraw-btn:hover {
-  background-color: #e64a19;
+  background-color: #b71c1c; /* Darker shade on hover */
 }
 
 /* Final Result Text */
@@ -100,25 +109,43 @@ body {
   color: #333333;
 }
 
-/* Withdraw History */
-#withdraw-history {
-  margin-top: 25px;
-  text-align: left;
+/* Withdraw Form */
+#withdraw-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start; /* Align labels and inputs to the left */
 }
 
-#withdraw-history h3 {
-  font-size: 20px;
-  color: #444444;
-  margin-bottom: 10px;
-}
-
-#history-list {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-
-#history-list li {
-  margin-bottom: 8px;
+#withdraw-form label {
   font-size: 16px;
-  color: #555555;
+  color: #555;
+  font-weight: bold;
+}
+
+#withdraw-form input[type="text"],
+#withdraw-form input[type="number"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%; /* Make inputs take full width */
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+#confirm-withdraw-btn {
+  padding: 10px 20px;
+  background-color: #007bff; /* A primary blue color */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+#confirm-withdraw-btn:hover {
+  background-color: #0056b3;
 }
