@@ -1,81 +1,129 @@
-const wheel = document.getElementById('wheel');
-const spinBtn = document.getElementById('spinBtn');
-const finalValue = document.getElementById('finalValue');
-const ctx = wheel.getContext('2d');
-let spinning = false;
-let degree = 0;
-let animationInterval;
-const rotationSpeed = 3; // रोटेशन की गति को नियंत्रित करता है
-const decelerationRate = 0.99; // मंदी की दर
+const wheel = document.getElementById("wheel");
+const spinBtn = document.getElementById("spin-btn");
+const finalValue = document.getElementById("final-value");
+const walletBalance = document.getElementById("wallet-balance");
+const withdrawBtn = document.getElementById("withdraw-btn");
+const historyList = document.getElementById("history-list");
 
-// व्हील के सेक्शंस और उनके रंग
-const sections = ['Section 1', 'Section 2', 'Section 3', 'Section 4', 'Section 5', 'Section 6'];
-const colors = ['#e74c3c', '#2ecc71', '#3498db', '#f39c12', '#9b59b6', '#1abc9c'];
+// Initialize wallet and history
+let wallet = parseInt(localStorage.getItem('wallet')) || 0;
+let history = JSON.parse(localStorage.getItem('withdraw_history')) || [];
 
-const data = sections.map((_, i) => 1); // सभी सेक्शंस का समान आकार
-const totalSlices = sections.length;
-const sliceAngle = 360 / totalSlices;
-const radius = wheel.width / 2;
-const centerX = radius;
-const centerY = radius;
+walletBalance.innerText = `Wallet: ${wallet}`;
 
-function drawWheel() {
-  ctx.clearRect(0, 0, wheel.width, wheel.height);
-  let startAngle = 0;
-
-  data.forEach((value, i) => {
-    const angle = sliceAngle * value;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, startAngle * Math.PI / 180, (startAngle + angle) * Math.PI / 180, false);
-    ctx.lineTo(centerX, centerY);
-    ctx.fillStyle = colors[i % colors.length];
-    ctx.fill();
-    ctx.stroke();
-
-    // टेक्स्ट जोड़ना (वैकल्पिक)
-    ctx.save();
-    ctx.translate(centerX, centerY);
-    ctx.rotate((startAngle + angle / 2 + 90) * Math.PI / 180);
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 16px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(sections[i], radius / 1.8, 0);
-    ctx.restore();
-
-    startAngle += angle;
+// Load history
+const loadHistory = () => {
+  historyList.innerHTML = "";
+  history.forEach((entry) => {
+    const li = document.createElement("li");
+    li.innerText = `Withdrawn ₹${entry.amount} at ${entry.time}`;
+    historyList.appendChild(li);
   });
+};
+loadHistory();
 
-  // तीर बनाना (CSS द्वारा नियंत्रित)
-}
+// Update wallet
+const updateWallet = (amount) => {
+  wallet += amount;
+  localStorage.setItem('wallet', wallet);
+  walletBalance.innerText = `Wallet: ${wallet}`;
+};
 
-function spin() {
-  if (spinning) return;
-  spinning = true;
-  finalValue.innerHTML = '';
-  let currentRotationSpeed = rotationSpeed;
+// Withdraw wallet
+withdrawBtn.addEventListener("click", () => {
+  const minWithdraw = 10; // Minimum wallet needed to withdraw
+  if (wallet >= minWithdraw) {
+    alert(`Withdrawal Successful! You withdrew ₹${wallet}.`);
 
-  animationInterval = setInterval(() => {
-    degree += currentRotationSpeed;
-    degree %= 360; // सुनिश्चित करें कि डिग्री 360 से अधिक न हो
-    wheel.style.transform = `rotate(${degree}deg)`;
+    // Add to history
+    const now = new Date();
+    const entry = {
+      amount: wallet,
+      time: now.toLocaleString(),
+    };
+    history.push(entry);
+    localStorage.setItem('withdraw_history', JSON.stringify(history));
+    loadHistory();
 
-    currentRotationSpeed *= decelerationRate;
+    // Reset wallet
+    wallet = 0;
+    localStorage.setItem('wallet', wallet);
+    walletBalance.innerText = `Wallet: ${wallet}`;
+  } else {
+    alert(`Minimum ₹${minWithdraw} required to withdraw!`);
+  }
+});
 
-    if (currentRotationSpeed < 0.02) {
-      clearInterval(animationInterval);
-      spinning = false;
-      determineFinalValue();
+// Rotation values
+const rotationValues = [
+  { minDegree: 0, maxDegree: 30, value: 2 },
+  { minDegree: 31, maxDegree: 90, value: 1 },
+  { minDegree: 91, maxDegree: 150, value: 6 },
+  { minDegree: 151, maxDegree: 210, value: 5 },
+  { minDegree: 211, maxDegree: 270, value: 4 },
+  { minDegree: 271, maxDegree: 330, value: 3 },
+  { minDegree: 331, maxDegree: 360, value: 2 },
+];
+
+const data = [16, 16, 16, 16, 16, 16];
+var pieColors = ["#8b35bc", "#b163da", "#8b35bc", "#b163da", "#8b35bc", "#b163da"];
+
+let myChart = new Chart(wheel, {
+  plugins: [ChartDataLabels],
+  type: "pie",
+  data: {
+    labels: [1, 2, 3, 4, 5, 6],
+    datasets: [{ backgroundColor: pieColors, data: data }],
+  },
+  options: {
+    responsive: true,
+    animation: { duration: 0 },
+    plugins: {
+      tooltip: false,
+      legend: { display: false },
+      datalabels: {
+        color: "#ffffff",
+        formatter: (_, context) => context.chart.data.labels[context.dataIndex],
+        font: { size: 24 },
+      },
+    },
+  },
+});
+
+// Value Generator
+const valueGenerator = (angleValue) => {
+  for (let i of rotationValues) {
+    if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
+      finalValue.innerHTML = `<p>Value: ${i.value}</p>`;
+      updateWallet(i.value);
+      spinBtn.disabled = false;
+      break;
     }
-  }, 1000 / 60); // 60 FPS
-}
+  }
+};
 
-function determineFinalValue() {
-  const winningDegree = 360 - (degree % 360); // व्हील के ऊपरी बिंदु के सापेक्ष डिग्री
-  const winningSlice = Math.floor(winningDegree / sliceAngle);
-  finalValue.innerHTML = `You landed on: ${sections[winningSlice]}`;
-}
+let count = 0;
+let resultValue = 101;
 
-// इनिशियलाइज़ेशन
-drawWheel();
+// Spin Button Click
+spinBtn.addEventListener("click", () => {
+  spinBtn.disabled = true;
+  finalValue.innerHTML = `<p>Good Luck!</p>`;
+  let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
 
-spinBtn.addEventListener('click', spin);
+  let rotationInterval = window.setInterval(() => {
+    myChart.options.rotation = myChart.options.rotation + resultValue;
+    myChart.update();
+
+    if (myChart.options.rotation >= 360) {
+      count += 1;
+      resultValue -= 5;
+      myChart.options.rotation = 0;
+    } else if (count > 15 && myChart.options.rotation == randomDegree) {
+      valueGenerator(randomDegree);
+      clearInterval(rotationInterval);
+      count = 0;
+      resultValue = 101;
+    }
+  }, 10);
+});
