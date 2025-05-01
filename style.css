@@ -1,151 +1,262 @@
-/* Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap');
-
-/* Reset */
 * {
-  margin: 0;
   padding: 0;
+  margin: 0;
   box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
-
-/* Body */
 body {
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #74ebd5, #acb6e5);
-  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #c3a3f1, #6414e9);
 }
-
-/* Wrapper */
 .wrapper {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  width: 350px;
+  width: 90%;
+  max-width: 34.37em;
+  max-height: 95vh; /* Adjusted max-height */
+  background-color: #ffffff;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  padding: 2em; /* Adjusted padding */
+  border-radius: 1em;
+  box-shadow: 0 4em 5em rgba(27, 8, 53, 0.2);
+  text-align: center; /* Center align content */
+  overflow-y: auto; /* Add scroll if content overflows */
 }
-
-/* Wheel Container */
 .container {
   position: relative;
+  width: 100%;
+  max-width: 25em; /* Limit wheel size */
+  margin: 0 auto; /* Center wheel */
 }
-
 #wheel {
-  width: 300px;
-  height: 300px;
+  max-height: inherit;
+  width: 100%;
+  top: 0;
+  padding: 0;
 }
-
-/* Spin Button */
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 #spin-btn {
-  margin-top: 20px;
-  padding: 10px 30px;
-  background-color: #4CAF50;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-#spin-btn:hover {
-  background-color: #45a049;
-}
-
-/* Spinner Arrow (Right Side) */
-.container img {
   position: absolute;
+  transform: translate(-50%, -50%);
   top: 50%;
-  left: calc(100% + 10px);
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  z-index: 10;
-}
-
-/* Wallet Actions Container */
-.wallet-actions {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column; /* Arrange wallet info and button vertically */
-  align-items: center; /* Center items horizontally */
-  gap: 10px; /* Space between wallet info and withdraw button */
-}
-
-/* Wallet Info */
-.wallet-info {
-  font-size: 18px;
-  color: #2e7d32; /* A nice green to indicate balance */
-  font-weight: 600; /* Make it stand out */
-}
-
-/* Withdraw Button */
-#withdraw-btn {
-  padding: 12px 28px; /* Slightly more padding */
-  background-color: #d32f2f; /* A more vibrant red */
-  color: white;
-  font-size: 17px; /* Slightly larger text */
-  font-weight: bold;
-  border: none;
-  border-radius: 15px; /* More rounded corners */
+  left: 50%;
+  height: 26%;
+  width: 26%;
+  border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-  transition: background-color 0.3s ease;
+  border: 0;
+  /* Updated spin button style to green */
+  background: radial-gradient(#50c878 50%, #2a914b 85%);
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 1.6em; /* Slightly smaller font */
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  box-shadow: 0 0.2em 0.5em rgba(0,0,0,0.2);
+}
+img {
+  position: absolute;
+  width: 3.5em; /* Adjusted size */
+  top: 50%;
+   /* Position arrow correctly */
+  right: -2em;
+  transform: translateY(-50%);
+}
+#final-value {
+  font-size: 1.4em; /* Adjusted font size */
+  text-align: center;
+  margin-top: 1em; /* Reduced margin */
+  color: #202020;
+  font-weight: 500;
+}
+
+/* Wallet Styles */
+#wallet {
+    font-size: 1.3em;
+    margin-top: 0.8em;
+    color: #333;
+    font-weight: 500;
+}
+
+#wallet-balance {
+    font-weight: 600;
+    color: #6414e9;
+}
+
+/* Withdraw Button Styles */
+#withdraw-btn {
+    display: block; /* Make it a block element */
+    margin: 1em auto 0 auto; /* Center the button */
+    padding: 0.8em 1.8em;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #dc3545; /* Red color like screenshot */
+    border: none;
+    border-radius: 0.5em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0.2em 0.5em rgba(0,0,0,0.15);
 }
 
 #withdraw-btn:hover {
-  background-color: #b71c1c; /* Darker shade on hover */
+    background-color: #c82333; /* Darker red on hover */
 }
 
-/* Final Result Text */
-#final-value p {
-  margin-top: 20px;
-  font-size: 20px;
+#withdraw-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Modal Styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 25px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 450px; /* Maximum width */
+  border-radius: 10px;
+  position: relative; /* For positioning the close button */
+  text-align: left; /* Align text left inside modal */
+}
+
+.close-btn {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
   font-weight: bold;
-  color: #333333;
 }
 
-/* Withdraw Form */
-#withdraw-form {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start; /* Align labels and inputs to the left */
-}
-
-#withdraw-form label {
-  font-size: 16px;
-  color: #555;
-  font-weight: bold;
-}
-
-#withdraw-form input[type="text"],
-#withdraw-form input[type="number"] {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 100%; /* Make inputs take full width */
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-
-#confirm-withdraw-btn {
-  padding: 10px 20px;
-  background-color: #007bff; /* A primary blue color */
-  color: white;
-  border: none;
-  border-radius: 8px;
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  text-decoration: none;
   cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
 }
 
-#confirm-withdraw-btn:hover {
-  background-color: #0056b3;
+.modal h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.modal p {
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.withdraw-options {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.withdraw-options button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    transition: background-color 0.3s ease;
+}
+
+.withdraw-options button:hover {
+    background-color: #ddd;
+}
+
+.withdraw-details {
+    display: none; /* Hide details initially */
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.withdraw-details label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #444;
+}
+
+.withdraw-details input,
+.withdraw-details select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+.withdraw-details button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1em;
+    color: #fff;
+    background-color: #28a745; /* Green color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.withdraw-details button:hover {
+    background-color: #218838; /* Darker green */
+}
+
+#withdraw-message {
+    margin-top: 15px;
+    font-weight: 500;
+    text-align: center;
+}
+
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    font-size: 12px;
+    padding: 1.5em; /* Adjust padding for smaller screens */
+  }
+  img {
+    width: 3em;
+    right: -1.5em; /* Adjust arrow position */
+  }
+   #spin-btn {
+      font-size: 1.4em;
+  }
+  #final-value {
+    font-size: 1.3em;
+  }
+   #wallet {
+     font-size: 1.2em;
+   }
+   #withdraw-btn {
+     font-size: 1.1em;
+     padding: 0.7em 1.5em;
+   }
+   .modal-content {
+     width: 90%;
+     margin: 20% auto; /* Adjust margin */
+   }
 }
