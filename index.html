@@ -1,45 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spin Wheel App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-
-<body>
-  <div class="wrapper">
-    <div class="container">
-      <img src="spinner-arrow-.svg" alt="spinner-arrow" />
-      <canvas id="wheel"></canvas>
-    </div>
-    <button id="spin-btn">Spin</button>
-
-    <div id="final-value">
-      <p>Click On The Spin Button To Start</p>
-    </div>
-
-    <div class="wallet-actions">
-      <div class="wallet-info">
-        <p>Wallet: <span id="current-coins">0</span> coins</p>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spin Wheel App</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <canvas id="wheel"></canvas>
+        <button id="spin-btn">Spin</button>
+        <img src="spinner-arrow-.svg" alt="spinner-arrow" />
+      </div>
+      <div id="final-value">
+        <p>Click On The Spin Button To Start</p>
+      </div>
+      <div id="wallet">
+        <p>Wallet: <span id="wallet-balance">0</span> coins</p>
       </div>
       <button id="withdraw-btn">Withdraw</button>
     </div>
 
-    <div id="withdraw-form" style="display: none;">
-      <label for="upi-id">UPI ID:</label>
-      <input type="text" id="upi-id" placeholder="Enter your UPI ID">
-      <label for="withdraw-amount">Coins to Withdraw:</label>
-      <input type="number" id="withdraw-amount" placeholder="Enter amount">
-      <button id="confirm-withdraw-btn">Withdraw</button>
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Withdraw Coins</h2>
+            <p>Current Balance: <span id="modal-balance">0</span> coins</p>
+            <p>Select Withdrawal Method:</p>
+            <div class="withdraw-options">
+                <button id="upi-option-btn">UPI</button>
+                <button id="giftcard-option-btn">Gift Card</button>
+            </div>
+
+            <div id="upi-details" class="withdraw-details">
+                <label for="upi-id">Enter UPI ID:</label>
+                <input type="text" id="upi-id" name="upi-id" placeholder="yourname@bank">
+                <label for="upi-amount">Amount (coins):</label>
+                <input type="number" id="upi-amount" name="upi-amount" min="50"> <button id="submit-upi-withdraw">Withdraw via UPI</button>
+            </div>
+
+            <div id="giftcard-details" class="withdraw-details">
+                <label for="giftcard-type">Select Gift Card:</label>
+                <select id="giftcard-type" name="giftcard-type">
+                    <option value="amazon">Amazon</option>
+                    <option value="flipkart">Flipkart</option>
+                    <option value="google_play">Google Play</option>
+                    </select>
+                 <label for="giftcard-amount">Amount (coins):</label>
+                <input type="number" id="giftcard-amount" name="giftcard-amount" min="100"> <button id="submit-giftcard-withdraw">Get Gift Card</button>
+            </div>
+             <p id="withdraw-message"></p> </div>
     </div>
-  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
-  <script src="script.js"></script>
-</body>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>
