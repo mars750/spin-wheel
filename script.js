@@ -23,13 +23,13 @@ let myChart = null; // Chart.js ऑब्जेक्ट को स्टोर 
 // --- Chart.js व्हील सेटअप ---
 // यह एक उदाहरण सेटअप है, आपको इसे अपने व्हील के अनुसार बदलना पड़ सकता है
 const rotationValues = [
-    { minDegree: 0, maxDegree: 30, value: 10 }, // उदाहरण वैल्यूज
-    { minDegree: 31, maxDegree: 90, value: 20 },
-    { minDegree: 91, maxDegree: 150, value: 5 },
-    { minDegree: 151, maxDegree: 210, value: 50 },
-    { minDegree: 211, maxDegree: 270, value: 15 },
-    { minDegree: 271, maxDegree: 330, value: 25 },
-    { minDegree: 331, maxDegree: 360, value: 10 },
+    { minDegree: 0, maxDegree: 30, value: 0 }, // उदाहरण वैल्यूज
+    { minDegree: 31, maxDegree: 90, value: 1 },
+    { minDegree: 91, maxDegree: 150, value: 2 },
+    { minDegree: 151, maxDegree: 210, value: 3 },
+    { minDegree: 211, maxDegree: 270, value: 4 },
+    { minDegree: 271, maxDegree: 330, value: 5 },
+    { minDegree: 331, maxDegree: 360, value: 0 },
 ];
 const data = [16, 16, 16, 16, 16, 16]; // बराबर हिस्से मान लें
 const pieColors = ["#8b36b8", "#702ca1", "#5b2484", "#8b36b8", "#702ca1", "#5b2484"]; // उदाहरण कलर्स
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         plugins: [ChartDataLabels],
         type: "pie",
         data: {
-            labels: [10, 20, 5, 50, 15, 25], // उदाहरण लेबल (मान)
+            labels: [0, 1, 2, 3, 4, 5], // उदाहरण लेबल (मान)
             datasets: [{
                 backgroundColor: pieColors,
                 data: data,
