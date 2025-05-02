@@ -22,12 +22,12 @@ let myChart = null; // Chart.js ऑब्जेक्ट को स्टोर 
 
 // --- Chart.js व्हील सेटअप ---
 const rotationValues = [
-    { minDegree: 330, maxDegree: 30, value: 0 }, // 0
-    { minDegree: 31, maxDegree: 90, value: 1 },
-    { minDegree: 91, maxDegree: 150, value: 2 },
-    { minDegree: 151, maxDegree: 210, value: 3 },
-    { minDegree: 211, maxDegree: 270, value: 4 },
-    { minDegree: 271, maxDegree: 330, value: 5 },
+    { minDegree: 330, maxDegree: 30, value: 0 },   // 0
+    { minDegree: 31, maxDegree: 90, value: 1 },    // 1
+    { minDegree: 91, maxDegree: 150, value: 2 },   // 2
+    { minDegree: 151, maxDegree: 210, value: 3 },  // 3
+    { minDegree: 211, maxDegree: 270, value: 4 },  // 4
+    { minDegree: 271, maxDegree: 330, value: 5 },  // 5
 ];
 const data = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6];
 const pieColors = ["#8b36b8", "#702ca1", "#5b2484", "#8b36b8", "#702ca1", "#5b2484"];
