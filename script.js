@@ -22,17 +22,16 @@ let myChart = null; // Chart.js ऑब्जेक्ट को स्टोर 
 
 // --- Chart.js व्हील सेटअप ---
 const rotationValues = [
-    { minDegree: 331, maxDegree: 360, value: 0 }, // 0 पहले
-    { minDegree: 0, maxDegree: 30, value: 0 },   // 0 दूसरा (ओवरलैप को हैंडल करने के लिए)
+    { minDegree: 330, maxDegree: 30, value: 0 }, // 0
     { minDegree: 31, maxDegree: 90, value: 1 },
     { minDegree: 91, maxDegree: 150, value: 2 },
     { minDegree: 151, maxDegree: 210, value: 3 },
     { minDegree: 211, maxDegree: 270, value: 4 },
     { minDegree: 271, maxDegree: 330, value: 5 },
 ];
-const data = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]; // अब डेटा को प्रोपोर्शनल होना चाहिए
-const pieColors = ["#8b36b8", "#702ca1", "#5b2484", "#8b36b8", "#702ca1", "#5b2484"]; // उदाहरण कलर्स
-const labels = rotationValues.filter((v, i, a) => a.findIndex(t => (t.value === v.value)) === i).map(rv => rv.value); // डुप्लीकेट वैल्यूज हटाएं
+const data = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6];
+const pieColors = ["#8b36b8", "#702ca1", "#5b2484", "#8b36b8", "#702ca1", "#5b2484"];
+const labels = rotationValues.filter((v, i, a) => a.findIndex(t => (t.value === v.value)) === i).map(rv => rv.value);
 
 // Chart.js व्हील बनाना (पेज लोड पर)
 document.addEventListener('DOMContentLoaded', () => {
@@ -48,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         options: {
             responsive: true,
-            animation: { duration: 0 }, // शुरुआती एनिमेशन बंद
+            animation: { duration: 0 },
             plugins: {
                 tooltip: false,
                 legend: { display: false },
@@ -62,31 +61,35 @@ document.addEventListener('DOMContentLoaded', () => {
             circumference: 360,
         },
     });
-    updateWithdrawButtonState(); // शुरुआत में विथड्रा बटन की स्थिति सेट करें
+    updateWithdrawButtonState();
 });
 
 
-// डिग्री से वैल्यू निकालने वाला हेल्पर फंक्शन (आपके rotationValues पर आधारित)
 const valueGenerator = (angleValue) => {
-    const normalizedAngle = (angleValue % 360 + 360) % 360; // नेगेटिव एंगल्स को हैंडल करें
-    for (let i = 0; i < rotationValues.length; i++) {
-        if (normalizedAngle >= rotationValues[i].minDegree && normalizedAngle <= rotationValues[i].maxDegree) {
-            return rotationValues[i].value;
+    const normalizedAngle = (angleValue % 360 + 360) % 360;
+    const segmentDegree = 360 / 6;
+    let winningValue = null;
+
+    rotationValues.forEach(range => {
+        if (normalizedAngle >= range.minDegree && normalizedAngle <= range.maxDegree) {
+            winningValue = range.value;
         }
-    }
-    return null; // अगर कोई मैच नहीं मिलता (यह नहीं होना चाहिए)
+    });
+
+    return winningValue !== null ? winningValue : 0;
 };
 
-// --- असल स्पिन लॉजिक फंक्शन ---
 function executeActualSpin() {
     console.log(`Executing spin #${spinCount}`);
-    spinBtn.disabled = true; // स्पिन के दौरान बटन को डिसेबल करें
+    spinBtn.disabled = true;
     finalValueDisplay.innerHTML = `<p>Spinning...</p>`;
 
-    const numSegments = labels.length; // अब लेबल्स की संख्या का उपयोग करें
+    const numSegments = labels.length;
     const segmentDegree = 360 / numSegments;
     const randomSegmentIndex = Math.floor(Math.random() * numSegments);
-    const stopDegree = segmentDegree * randomSegmentIndex + segmentDegree / 2 + Math.random() * (segmentDegree / 4) - (segmentDegree / 8);
+    const baseStopDegree = segmentDegree * (randomSegmentIndex + 0.5);
+    const randomOffset = Math.random() * (segmentDegree / 4) - (segmentDegree / 8);
+    const stopDegree = baseStopDegree + randomOffset;
 
     const spins = 5;
     const totalRotation = spins * 360 + stopDegree;
@@ -118,7 +121,6 @@ function executeActualSpin() {
     }
 }
 
-// --- स्पिन खत्म होने पर रिजल्ट हैंडल करें ---
 function handleSpinResult(finalRotation) {
     const resultValue = valueGenerator(finalRotation);
     const resultText = `You won: ${resultValue} coins!`;
@@ -134,7 +136,6 @@ function handleSpinResult(finalRotation) {
     updateWithdrawButtonState();
 }
 
-// --- स्पिन बटन का क्लिक इवेंट ---
 spinBtn.addEventListener("click", () => {
     if (!myChart) {
         console.error("Chart not initialized yet.");
@@ -157,8 +158,6 @@ spinBtn.addEventListener("click", () => {
 });
 
 
-// --- विथड्रावल लॉजिक ---
-
 function updateWithdrawButtonState() {
     if (walletBalance >= 50) {
         withdrawBtn.disabled = false;
@@ -171,7 +170,6 @@ function updateWithdrawButtonState() {
     }
 }
 
-// विथड्रा बटन क्लिक पर मोडल खोलें
 withdrawBtn.addEventListener('click', () => {
     if (!withdrawBtn.disabled) {
         modalBalanceDisplay.textContent = walletBalance;
@@ -182,19 +180,16 @@ withdrawBtn.addEventListener('click', () => {
     }
 });
 
-// मोडल बंद करें
 closeModalBtn.addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
-// मोडल के बाहर क्लिक करने पर बंद करें
 window.addEventListener('click', (event) => {
     if (event.target == modal) {
         modal.style.display = 'none';
     }
 });
 
-// विथड्रावल ऑप्शन चुनने पर
 upiOptionBtn.addEventListener('click', () => {
     upiDetailsDiv.style.display = 'block';
     giftcardDetailsDiv.style.display = 'none';
@@ -205,7 +200,6 @@ giftcardOptionBtn.addEventListener('click', () => {
     upiDetailsDiv.style.display = 'none';
 });
 
-// UPI विथड्रावल सबमिट
 submitUpiWithdrawBtn.addEventListener('click', () => {
     const amount = parseInt(document.getElementById('upi-amount').value);
     const upiId = document.getElementById('upi-id').value.trim();
@@ -238,7 +232,6 @@ submitUpiWithdrawBtn.addEventListener('click', () => {
     // setTimeout(() => { modal.style.display = 'none'; }, 2000);
 });
 
-// Gift Card विथड्रावल सबमिट
 submitGiftcardWithdrawBtn.addEventListener('click', () => {
     const amount = parseInt(document.getElementById('giftcard-amount').value);
     const cardType = document.getElementById('giftcard-type').value;
@@ -265,5 +258,4 @@ submitGiftcardWithdrawBtn.addEventListener('click', () => {
     // setTimeout(() => { modal.style.display = 'none'; }, 2000);
 });
 
-// सुनिश्चित करें कि पेज लोड पर विथड्रा बटन की सही स्थिति हो
 document.addEventListener('DOMContentLoaded', updateWithdrawButtonState);
