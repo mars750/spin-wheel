@@ -8,6 +8,11 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
+    <style>
+        /* आप चाहें तो जरूरी CSS यहाँ भी लिख सकते हैं */
+        .modal { display: none; /* बाकी मोडल स्टाइल्स style.css में होंगी */ }
+        .withdraw-details { display: none; /* शुरुआत में छिपे हुए */ }
+    </style>
   </head>
   <body>
     <div class="wrapper">
@@ -40,7 +45,8 @@
                 <label for="upi-id">Enter UPI ID:</label>
                 <input type="text" id="upi-id" name="upi-id" placeholder="yourname@bank">
                 <label for="upi-amount">Amount (coins):</label>
-                <input type="number" id="upi-amount" name="upi-amount" min="50"> <button id="submit-upi-withdraw">Withdraw via UPI</button>
+                <input type="number" id="upi-amount" name="upi-amount" min="50">
+                <button id="submit-upi-withdraw">Withdraw via UPI</button>
             </div>
 
             <div id="giftcard-details" class="withdraw-details">
@@ -49,15 +55,20 @@
                     <option value="amazon">Amazon</option>
                     <option value="flipkart">Flipkart</option>
                     <option value="google_play">Google Play</option>
-                    </select>
-                 <label for="giftcard-amount">Amount (coins):</label>
-                <input type="number" id="giftcard-amount" name="giftcard-amount" min="100"> <button id="submit-giftcard-withdraw">Get Gift Card</button>
+                </select>
+                <label for="giftcard-amount">Amount (coins):</label>
+                <input type="number" id="giftcard-amount" name="giftcard-amount" min="100">
+                <button id="submit-giftcard-withdraw">Get Gift Card</button>
             </div>
-             <p id="withdraw-message"></p> </div>
+            <p id="withdraw-message"></p>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.1.0/chartjs-plugin-datalabels.min.js"></script>
+
     <script src="script.js"></script>
-  </body>
+
+    <script type='text/javascript' src='//pl26529116.profitableratecpm.com/76/18/39/761839507179e03440bce9f7d23946d1.js'></script>
+    </body>
 </html>
