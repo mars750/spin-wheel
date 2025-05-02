@@ -23,13 +23,12 @@ let myChart = null; // Chart.js ऑब्जेक्ट को स्टोर 
 // --- Chart.js व्हील सेटअप ---
 // यह एक उदाहरण सेटअप है, आपको इसे अपने व्हील के अनुसार बदलना पड़ सकता है
 const rotationValues = [
-    { minDegree: 0, maxDegree: 30, value: 10 }, // उदाहरण वैल्यूज
-    { minDegree: 31, maxDegree: 90, value: 20 },
-    { minDegree: 91, maxDegree: 150, value: 5 },
-    { minDegree: 151, maxDegree: 210, value: 50 },
-    { minDegree: 211, maxDegree: 270, value: 15 },
-    { minDegree: 271, maxDegree: 330, value: 25 },
-    { minDegree: 331, maxDegree: 360, value: 10 },
+    { minDegree: 0, maxDegree: 60, value: 10 },
+    { minDegree: 61, maxDegree: 120, value: 20 },
+    { minDegree: 121, maxDegree: 180, value: 5 },
+    { minDegree: 181, maxDegree: 240, value: 50 },
+    { minDegree: 241, maxDegree: 300, value: 15 },
+    { minDegree: 301, maxDegree: 360, value: 25 },
 ];
 const data = [16, 16, 16, 16, 16, 16]; // बराबर हिस्से मान लें
 const pieColors = ["#8b36b8", "#702ca1", "#5b2484", "#8b36b8", "#702ca1", "#5b2484"]; // उदाहरण कलर्स
@@ -83,42 +82,37 @@ function executeActualSpin() {
     spinBtn.disabled = true; // स्पिन के दौरान बटन को डिसेबल करें
     finalValueDisplay.innerHTML = `<p>Spinning...</p>`;
 
-    // --- यहाँ आपका मौजूदा स्पिन एनिमेशन लॉजिक डालें ---
     // 1. रैंडम स्टॉप एंगल कैलकुलेट करें
-    let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
-    // 2. एनिमेशन के लिए रोटेशन वैल्यू सेट करें (जैसे कई पूरे चक्कर + रैंडम डिग्री)
-    let rotationInterval = window.setInterval(() => {
-        myChart.options.rotation = myChart.options.rotation + Math.floor(Math.random() * 10 + 15); // स्मूथ रोटेशन के लिए
+    let randomDegree = Math.floor(Math.random() * 360); // 0 से 359 तक
+
+    // 2. एनिमेशन के लिए रोटेशन वैल्यू सेट करें
+    let spins = 5; // व्हील कितनी बार घूमेगा
+    let finalRotation = spins * 360 + randomDegree;
+    let animationDuration = 4000; // एनीमेशन की अवधि (मिलीसेकंड में)
+    let startTime = null;
+
+    function animateWheel(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const ease = (t) => t * t * t * (t * (6 * t - 15) + 10); // ईजिंग फंक्शन
+        myChart.options.rotation = ease(timeElapsed / animationDuration) * finalRotation;
         myChart.update();
-    }, 10); // हर 10ms पर अपडेट करें
+        if (timeElapsed < animationDuration) {
+            requestAnimationFrame(animateWheel);
+        } else {
+            // एनीमेशन समाप्त
+            const winningValue = valueGenerator(randomDegree);
+            const resultText = `You won: ${winningValue} coins!`;
+            finalValueDisplay.innerHTML = `<p>${resultText}</p>`;
+            walletBalance += winningValue;
+            walletBalanceDisplay.textContent = walletBalance;
+            spinBtn.disabled = false;
+            console.log("Spin finished. Wallet:", walletBalance, "Winning Value:", winningValue, "Final Degree:", randomDegree);
+            updateWithdrawButtonState();
+        }
+    }
 
-    // 3. कुछ देर बाद (एनिमेशन टाइम) एनिमेशन रोकें और रिजल्ट दिखाएं
-    setTimeout(() => {
-        clearInterval(rotationInterval); // रोटेशन रोकें
-        // फाइनल एंगल सेट करें
-        myChart.options.rotation = randomDegree;
-        myChart.update();
-
-        // --- यहाँ रिजल्ट और वॉलेट अपडेट लॉजिक डालें ---
-        // 1. स्टॉप एंगल से वैल्यू निकालें
-        const resultValue = valueGenerator(randomDegree);
-        const resultText = `You won: ${resultValue} coins!`;
-
-        // 2. रिजल्ट दिखाएं
-        finalValueDisplay.innerHTML = `<p>${resultText}</p>`;
-
-        // 3. वॉलेट अपडेट करें
-        walletBalance += resultValue;
-        walletBalanceDisplay.textContent = walletBalance;
-
-        // 4. स्पिन बटन फिर से इनेबल करें
-        spinBtn.disabled = false;
-        console.log("Spin finished. Wallet:", walletBalance);
-
-        // विथड्रा बटन की स्थिति अपडेट करें
-        updateWithdrawButtonState();
-
-    }, 4000); // मान लें स्पिन एनिमेशन 4 सेकंड चलता है
+    requestAnimationFrame(animateWheel);
     // --------------------------------------------------
 }
 
