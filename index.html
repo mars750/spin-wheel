@@ -1,33 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spin Wheel App</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap"
-      rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap"
+        rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
     <style>
         /* आप चाहें तो जरूरी CSS यहाँ भी लिख सकते हैं */
-        .modal { display: none; /* बाकी मोडल स्टाइल्स style.css में होंगी */ }
-        .withdraw-details { display: none; /* शुरुआत में छिपे हुए */ }
+        .modal {
+            display: none; /* बाकी मोडल स्टाइल्स style.css में होंगी */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .withdraw-details {
+            display: none; /* शुरुआत में छिपे हुए */
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .withdraw-options button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .withdraw-details label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .withdraw-details input[type=text],
+        .withdraw-details input[type=number],
+        .withdraw-details select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .withdraw-details button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .withdraw-details button:hover {
+            background-color: #45a049;
+        }
+
+        #withdraw-message {
+            margin-top: 15px;
+            font-weight: bold;
+            color: green; /* You can change the color based on status */
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="wrapper">
-      <div class="container">
-        <canvas id="wheel"></canvas>
-        <button id="spin-btn">Spin</button>
-        <img src="spinner-arrow-.svg" alt="spinner-arrow" />
-      </div>
-      <div id="final-value">
-        <p>Click On The Spin Button To Start</p>
-      </div>
-      <div id="wallet">
-        <p>Wallet: <span id="wallet-balance">0</span> coins</p>
-      </div>
-      <button id="withdraw-btn">Withdraw</button>
+        <div class="container">
+            <canvas id="wheel"></canvas>
+            <button id="spin-btn">Spin</button>
+            <img src="spinner-arrow-.svg" alt="spinner-arrow" />
+        </div>
+        <div id="final-value">
+            <p>Click On The Spin Button To Start</p>
+        </div>
+        <div id="wallet">
+            <p>Wallet: <span id="wallet-balance">0</span> coins</p>
+        </div>
+        <button id="withdraw-btn">Withdraw</button>
     </div>
 
     <div id="withdraw-modal" class="modal">
@@ -70,5 +152,5 @@
     <script src="script.js"></script>
 
     <script type='text/javascript' src='//pl26529116.profitableratecpm.com/76/18/39/761839507179e03440bce9f7d23946d1.js'></script>
-    </body>
+</body>
 </html>
