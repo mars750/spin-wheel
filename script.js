@@ -158,7 +158,7 @@ spinBtn.addEventListener("click", () => {
 
 function updateWithdrawButtonState() {
     // मान लें कम से कम 50 कॉइन विथड्रा करने के लिए चाहिए
-    if (walletBalance >= 50) {
+    if (walletBalance >= 1000) {
         withdrawBtn.disabled = false;
         withdrawBtn.style.opacity = 1;
         withdrawBtn.style.cursor = 'pointer';
@@ -213,8 +213,8 @@ submitUpiWithdrawBtn.addEventListener('click', () => {
         withdrawMessage.style.color = 'red';
         return;
     }
-    if (isNaN(amount) || amount < 50) {
-        withdrawMessage.textContent = 'Minimum withdrawal amount for UPI is 50 coins.';
+    if (isNaN(amount) || amount < 1000) {
+        withdrawMessage.textContent = 'Minimum withdrawal amount for UPI is 1000 coins.';
          withdrawMessage.style.color = 'red';
         return;
     }
