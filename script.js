@@ -17,11 +17,10 @@ const withdrawMessage = document.getElementById('withdraw-message');
 
 // ऐप वेरिएबल्स
 let walletBalance = 0; // यूज़र का वॉलेट बैलेंस
-let spinCount = 0;    // स्पिन का काउंटर
+let spinCount = 0;     // स्पिन का काउंटर
 let myChart = null; // Chart.js ऑब्जेक्ट को स्टोर करने के लिए
 
 // --- Chart.js व्हील सेटअप ---
-// यह एक उदाहरण सेटअप है, आपको इसे अपने व्हील के अनुसार बदलना पड़ सकता है
 const rotationValues = [
     { minDegree: 0, maxDegree: 30, value: 0 }, // उदाहरण वैल्यूज
     { minDegree: 31, maxDegree: 90, value: 1 },
@@ -33,14 +32,15 @@ const rotationValues = [
 ];
 const data = [16, 16, 16, 16, 16, 16]; // बराबर हिस्से मान लें
 const pieColors = ["#8b36b8", "#702ca1", "#5b2484", "#8b36b8", "#702ca1", "#5b2484"]; // उदाहरण कलर्स
+const labels = rotationValues.map(rv => rv.value); // लेबल्स को rotationValues से निकालें
 
 // Chart.js व्हील बनाना (पेज लोड पर)
 document.addEventListener('DOMContentLoaded', () => {
-     myChart = new Chart(wheelCanvas, {
+    myChart = new Chart(wheelCanvas, {
         plugins: [ChartDataLabels],
         type: "pie",
         data: {
-            labels: [0, 1, 2, 3, 4, 5], // उदाहरण लेबल (मान)
+            labels: labels,
             datasets: [{
                 backgroundColor: pieColors,
                 data: data,
@@ -58,6 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     font: { size: 24 },
                 },
             },
+            // व्हील को इनिशियली सेंटर करने के लिए रोटेशन सेट करें
+            rotation: 0,
+            circumference: 360,
         },
     });
     updateWithdrawButtonState(); // शुरुआत में विथड्रा बटन की स्थिति सेट करें
@@ -82,43 +85,64 @@ function executeActualSpin() {
     spinBtn.disabled = true; // स्पिन के दौरान बटन को डिसेबल करें
     finalValueDisplay.innerHTML = `<p>Spinning...</p>`;
 
-    // --- यहाँ आपका मौजूदा स्पिन एनिमेशन लॉजिक डालें ---
-    // 1. रैंडम स्टॉप एंगल कैलकुलेट करें
-    let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
+    // 1. रैंडम स्टॉप एंगल कैलकुलेट करें (अब हम सेक्टर के सेंटर के पास रुकने की कोशिश करेंगे)
+    const numSegments = rotationValues.length;
+    const segmentDegree = 360 / numSegments;
+    const randomSegmentIndex = Math.floor(Math.random() * numSegments);
+    // प्रत्येक सेगमेंट के मध्य बिंदु के पास एक रैंडम डिग्री कैलकुलेट करें
+    const randomDegree = segmentDegree * randomSegmentIndex + segmentDegree / 2 + Math.random() * (segmentDegree / 4) - (segmentDegree / 8); // थोड़ा रैंडमनेस जोड़ें
+
     // 2. एनिमेशन के लिए रोटेशन वैल्यू सेट करें (जैसे कई पूरे चक्कर + रैंडम डिग्री)
-    let rotationInterval = window.setInterval(() => {
-        myChart.options.rotation = myChart.options.rotation + Math.floor(Math.random() * 10 + 15); // स्मूथ रोटेशन के लिए
-        myChart.update();
-    }, 10); // हर 10ms पर अपडेट करें
+    const spins = 5; // व्हील कितनी बार घूमेगा
+    const totalRotation = spins * 360 + randomDegree;
 
-    // 3. कुछ देर बाद (एनिमेशन टाइम) एनिमेशन रोकें और रिजल्ट दिखाएं
-    setTimeout(() => {
-        clearInterval(rotationInterval); // रोटेशन रोकें
-        // फाइनल एंगल सेट करें
-        myChart.options.rotation = randomDegree;
-        myChart.update();
+    let animationProgress = 0;
+    const animationDuration = 4000; // एनिमेशन की अवधि (मिलीसेकंड में)
+    const startTime = performance.now();
 
-        // --- यहाँ रिजल्ट और वॉलेट अपडेट लॉजिक डालें ---
-        // 1. स्टॉप एंगल से वैल्यू निकालें
-        const resultValue = valueGenerator(randomDegree);
-        const resultText = `You won: ${resultValue} coins!`;
+    function animateWheel() {
+        const currentTime = performance.now();
+        const elapsedTime = currentTime - startTime;
 
-        // 2. रिजल्ट दिखाएं
-        finalValueDisplay.innerHTML = `<p>${resultText}</p>`;
+        if (elapsedTime >= animationDuration) {
+            clearInterval(animationInterval);
+            myChart.options.rotation = totalRotation % 360; // फाइनल पोजीशन सेट करें
+            myChart.update();
+            handleSpinResult(myChart.options.rotation);
+        } else {
+            const ease = easeOutCubic(elapsedTime / animationDuration);
+            myChart.options.rotation = ease * totalRotation;
+            myChart.update();
+        }
+    }
 
-        // 3. वॉलेट अपडेट करें
-        walletBalance += resultValue;
-        walletBalanceDisplay.textContent = walletBalance;
+    const animationInterval = setInterval(animateWheel, 10); // हर 10ms पर अपडेट करें
 
-        // 4. स्पिन बटन फिर से इनेबल करें
-        spinBtn.disabled = false;
-        console.log("Spin finished. Wallet:", walletBalance);
+    // Easing फंक्शन (स्मूथ एनिमेशन के लिए)
+    function easeOutCubic(t) {
+        return (--t) * t * t + 1;
+    }
+}
 
-        // विथड्रा बटन की स्थिति अपडेट करें
-        updateWithdrawButtonState();
+// --- स्पिन खत्म होने पर रिजल्ट हैंडल करें ---
+function handleSpinResult(finalRotation) {
+    // फाइनल रोटेशन से विनिंग वैल्यू निकालें
+    const resultValue = valueGenerator(finalRotation);
+    const resultText = `You won: ${resultValue} coins!`;
 
-    }, 4000); // मान लें स्पिन एनिमेशन 4 सेकंड चलता है
-    // --------------------------------------------------
+    // रिजल्ट दिखाएं
+    finalValueDisplay.innerHTML = `<p>${resultText}</p>`;
+
+    // वॉलेट अपडेट करें
+    walletBalance += resultValue;
+    walletBalanceDisplay.textContent = walletBalance;
+
+    // स्पिन बटन फिर से इनेबल करें
+    spinBtn.disabled = false;
+    console.log("Spin finished. Wallet:", walletBalance);
+
+    // विथड्रा बटन की स्थिति अपडेट करें
+    updateWithdrawButtonState();
 }
 
 // --- स्पिन बटन का क्लिक इवेंट ---
@@ -215,7 +239,7 @@ submitUpiWithdrawBtn.addEventListener('click', () => {
     }
     if (isNaN(amount) || amount < 50) {
         withdrawMessage.textContent = 'Minimum withdrawal amount for UPI is 50 coins.';
-         withdrawMessage.style.color = 'red';
+        withdrawMessage.style.color = 'red';
         return;
     }
     if (amount > walletBalance) {
@@ -233,8 +257,8 @@ submitUpiWithdrawBtn.addEventListener('click', () => {
     withdrawMessage.textContent = `Withdrawal request for ${amount} coins submitted!`;
     withdrawMessage.style.color = 'green';
     updateWithdrawButtonState(); // विथड्रा बटन की स्थिति अपडेट करें
-     document.getElementById('upi-amount').value = ''; // फ़ील्ड साफ़ करें
-     document.getElementById('upi-id').value = '';
+    document.getElementById('upi-amount').value = ''; // फ़ील्ड साफ़ करें
+    document.getElementById('upi-id').value = '';
     // setTimeout(() => { modal.style.display = 'none'; }, 2000); // 2 सेकंड बाद मोडल बंद करें
 });
 
@@ -243,9 +267,9 @@ submitGiftcardWithdrawBtn.addEventListener('click', () => {
     const amount = parseInt(document.getElementById('giftcard-amount').value);
     const cardType = document.getElementById('giftcard-type').value;
 
-     if (isNaN(amount) || amount < 100) { // मान लें गिफ्ट कार्ड के लिए मिनिमम 100 है
+    if (isNaN(amount) || amount < 100) { // मान लें गिफ्ट कार्ड के लिए मिनिमम 100 है
         withdrawMessage.textContent = 'Minimum amount for Gift Card is 100 coins.';
-         withdrawMessage.style.color = 'red';
+        withdrawMessage.style.color = 'red';
         return;
     }
     if (amount > walletBalance) {
@@ -254,16 +278,16 @@ submitGiftcardWithdrawBtn.addEventListener('click', () => {
         return;
     }
 
-     // --- यहाँ सर्वर पर विथड्रावल रिक्वेस्ट भेजने का लॉजिक आएगा ---
-     console.log(`Withdrawal Request: ${amount} coins for ${cardType} Gift Card`);
-     // अभी के लिए, हम सिर्फ बैलेंस कम कर देंगे और मैसेज दिखाएंगे
+    // --- यहाँ सर्वर पर विथड्रावल रिक्वेस्ट भेजने का लॉजिक आएगा ---
+    console.log(`Withdrawal Request: ${amount} coins for ${cardType} Gift Card`);
+    // अभी के लिए, हम सिर्फ बैलेंस कम कर देंगे और मैसेज दिखाएंगे
     walletBalance -= amount;
     walletBalanceDisplay.textContent = walletBalance;
     modalBalanceDisplay.textContent = walletBalance;
-     withdrawMessage.textContent = `Request for ${cardType} gift card (${amount} coins) submitted!`;
-     withdrawMessage.style.color = 'green';
-     updateWithdrawButtonState();
-     document.getElementById('giftcard-amount').value = '';
+    withdrawMessage.textContent = `Request for ${cardType} gift card (${amount} coins) submitted!`;
+    withdrawMessage.style.color = 'green';
+    updateWithdrawButtonState();
+    document.getElementById('giftcard-amount').value = '';
     // setTimeout(() => { modal.style.display = 'none'; }, 2000);
 });
 
