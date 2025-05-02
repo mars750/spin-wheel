@@ -1,282 +1,271 @@
-const wheel = document.getElementById("wheel");
+// जरूरी DOM एलिमेंट्स को चुनना
+const wheelCanvas = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin-btn");
-const finalValue = document.getElementById("final-value");
+const finalValueDisplay = document.getElementById("final-value");
 const walletBalanceDisplay = document.getElementById("wallet-balance");
-const withdrawBtn = document.getElementById("withdraw-btn");
-const withdrawModal = document.getElementById("withdraw-modal");
-const closeModalBtn = document.querySelector(".close-btn");
-const modalBalanceDisplay = document.getElementById("modal-balance");
-const upiOptionBtn = document.getElementById("upi-option-btn");
-const giftcardOptionBtn = document.getElementById("giftcard-option-btn");
-const upiDetailsDiv = document.getElementById("upi-details");
-const giftcardDetailsDiv = document.getElementById("giftcard-details");
-const upiIdInput = document.getElementById("upi-id");
-const upiAmountInput = document.getElementById("upi-amount");
-const giftcardTypeSelect = document.getElementById("giftcard-type");
-const giftcardAmountInput = document.getElementById("giftcard-amount");
-const submitUpiBtn = document.getElementById("submit-upi-withdraw");
-const submitGiftcardBtn = document.getElementById("submit-giftcard-withdraw");
-const withdrawMessage = document.getElementById("withdraw-message");
+const withdrawBtn = document.getElementById('withdraw-btn');
+const modal = document.getElementById('withdraw-modal');
+const closeModalBtn = modal.querySelector('.close-btn');
+const modalBalanceDisplay = document.getElementById('modal-balance');
+const upiOptionBtn = document.getElementById('upi-option-btn');
+const giftcardOptionBtn = document.getElementById('giftcard-option-btn');
+const upiDetailsDiv = document.getElementById('upi-details');
+const giftcardDetailsDiv = document.getElementById('giftcard-details');
+const submitUpiWithdrawBtn = document.getElementById('submit-upi-withdraw');
+const submitGiftcardWithdrawBtn = document.getElementById('submit-giftcard-withdraw');
+const withdrawMessage = document.getElementById('withdraw-message');
 
+// ऐप वेरिएबल्स
+let walletBalance = 0; // यूज़र का वॉलेट बैलेंस
+let spinCount = 0;    // स्पिन का काउंटर
+let myChart = null; // Chart.js ऑब्जेक्ट को स्टोर करने के लिए
 
-let walletBalance = 0; // Initialize wallet balance
-let minWithdrawalCoins = 50; // Example: Minimum coins needed to withdraw
-
-//Object that stores values of minimum and maximum angle for a value
+// --- Chart.js व्हील सेटअप ---
+// यह एक उदाहरण सेटअप है, आपको इसे अपने व्हील के अनुसार बदलना पड़ सकता है
 const rotationValues = [
-  { minDegree: 0, maxDegree: 30, value: 2 },
-  { minDegree: 31, maxDegree: 90, value: 1 },
-  { minDegree: 91, maxDegree: 150, value: 6 },
-  { minDegree: 151, maxDegree: 210, value: 5 },
-  { minDegree: 211, maxDegree: 270, value: 4 },
-  { minDegree: 271, maxDegree: 330, value: 3 },
-  { minDegree: 331, maxDegree: 360, value: 2 },
+    { minDegree: 0, maxDegree: 30, value: 10 }, // उदाहरण वैल्यूज
+    { minDegree: 31, maxDegree: 90, value: 20 },
+    { minDegree: 91, maxDegree: 150, value: 5 },
+    { minDegree: 151, maxDegree: 210, value: 50 },
+    { minDegree: 211, maxDegree: 270, value: 15 },
+    { minDegree: 271, maxDegree: 330, value: 25 },
+    { minDegree: 331, maxDegree: 360, value: 10 },
 ];
-//Size of each piece
-const data = [16, 16, 16, 16, 16, 16];
-//background color for each piece
-var pieColors = [
-  "#8b35bc",
-  "#b163da",
-  "#8b35bc",
-  "#b163da",
-  "#8b35bc",
-  "#b163da",
-];
-//Create chart
-let myChart = new Chart(wheel, {
-  plugins: [ChartDataLabels],
-  type: "pie",
-  data: {
-    labels: [1, 2, 3, 4, 5, 6],
-    datasets: [
-      {
-        backgroundColor: pieColors,
-        data: data,
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    animation: { duration: 0 },
-    plugins: {
-      tooltip: false,
-      legend: {
-        display: false,
-      },
-      datalabels: {
-        color: "#ffffff",
-        formatter: (_, context) => context.chart.data.labels[context.dataIndex],
-        font: { size: 24 },
-      },
-    },
-  },
+const data = [16, 16, 16, 16, 16, 16]; // बराबर हिस्से मान लें
+const pieColors = ["#8b36b8", "#702ca1", "#5b2484", "#8b36b8", "#702ca1", "#5b2484"]; // उदाहरण कलर्स
+
+// Chart.js व्हील बनाना (पेज लोड पर)
+document.addEventListener('DOMContentLoaded', () => {
+     myChart = new Chart(wheelCanvas, {
+        plugins: [ChartDataLabels],
+        type: "pie",
+        data: {
+            labels: [10, 20, 5, 50, 15, 25], // उदाहरण लेबल (मान)
+            datasets: [{
+                backgroundColor: pieColors,
+                data: data,
+            }, ],
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 0 }, // शुरुआती एनिमेशन बंद
+            plugins: {
+                tooltip: false,
+                legend: { display: false },
+                datalabels: {
+                    color: "#ffffff",
+                    formatter: (_, context) => context.chart.data.labels[context.dataIndex],
+                    font: { size: 24 },
+                },
+            },
+        },
+    });
+    updateWithdrawButtonState(); // शुरुआत में विथड्रा बटन की स्थिति सेट करें
 });
 
-// Update Wallet Balance Display
-const updateWalletDisplay = () => {
-    walletBalanceDisplay.textContent = walletBalance;
-    modalBalanceDisplay.textContent = walletBalance; // Update modal balance too
-    // Enable/disable withdraw button based on balance
-    withdrawBtn.disabled = walletBalance < minWithdrawalCoins;
-};
 
-//display value based on the randomAngle and update wallet
+// डिग्री से वैल्यू निकालने वाला हेल्पर फंक्शन (आपके rotationValues पर आधारित)
 const valueGenerator = (angleValue) => {
-  let earnedValue = 0;
-  for (let i of rotationValues) {
-    if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
-      earnedValue = i.value;
-      finalValue.innerHTML = `<p>You Won: ${earnedValue} coins</p>`;
-      walletBalance += earnedValue; // Add earned value to balance
-      updateWalletDisplay(); // Update the wallet display
-      spinBtn.disabled = false;
-      break;
+    // 360 डिग्री मोड्यूलो सुनिश्चित करें
+    const adjustedAngle = angleValue % 360;
+    for (let i = 0; i < rotationValues.length; i++) {
+        if (adjustedAngle >= rotationValues[i].minDegree && adjustedAngle <= rotationValues[i].maxDegree) {
+            return rotationValues[i].value;
+        }
     }
-  }
+    return 0; // अगर कोई मैच नहीं मिलता
 };
 
-//Spinner count
-let count = 0;
-//100 rotations for animation and last rotation for result
-let resultValue = 101;
-//Start spinning
-spinBtn.addEventListener("click", () => {
-  spinBtn.disabled = true;
-  finalValue.innerHTML = `<p>Good Luck!</p>`;
-  let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
-  let rotationInterval = window.setInterval(() => {
-    myChart.options.rotation = myChart.options.rotation + resultValue;
-    myChart.update();
-    if (myChart.options.rotation >= 360) {
-      count += 1;
-      resultValue -= 5;
-      myChart.options.rotation = 0;
-    } else if (count > 15 && myChart.options.rotation == randomDegree) {
-      valueGenerator(randomDegree);
-      clearInterval(rotationInterval);
-      count = 0;
-      resultValue = 101;
-    }
-  }, 10);
-});
+// --- असल स्पिन लॉजिक फंक्शन ---
+function executeActualSpin() {
+    console.log(`Executing spin #${spinCount}`);
+    spinBtn.disabled = true; // स्पिन के दौरान बटन को डिसेबल करें
+    finalValueDisplay.innerHTML = `<p>Spinning...</p>`;
 
-// --- Withdrawal Modal Logic ---
+    // --- यहाँ आपका मौजूदा स्पिन एनिमेशन लॉजिक डालें ---
+    // 1. रैंडम स्टॉप एंगल कैलकुलेट करें
+    let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
+    // 2. एनिमेशन के लिए रोटेशन वैल्यू सेट करें (जैसे कई पूरे चक्कर + रैंडम डिग्री)
+    let rotationInterval = window.setInterval(() => {
+        myChart.options.rotation = myChart.options.rotation + Math.floor(Math.random() * 10 + 15); // स्मूथ रोटेशन के लिए
+        myChart.update();
+    }, 10); // हर 10ms पर अपडेट करें
 
-// Show Modal
-withdrawBtn.addEventListener("click", () => {
-    if (walletBalance >= minWithdrawalCoins) {
-        updateWalletDisplay(); // Ensure modal balance is current
-        withdrawModal.style.display = "block";
-        // Reset modal state
-        upiDetailsDiv.style.display = "none";
-        giftcardDetailsDiv.style.display = "none";
-        upiIdInput.value = "";
-        upiAmountInput.value = "";
-        giftcardAmountInput.value = "";
-        withdrawMessage.textContent = "";
-        upiAmountInput.min = minWithdrawalCoins; // Set minimum dynamically if needed
-        giftcardAmountInput.min = minWithdrawalCoins; // Set minimum dynamically if needed
-    } else {
-        alert(`You need at least ${minWithdrawalCoins} coins to withdraw.`);
-    }
-});
-
-// Hide Modal
-closeModalBtn.addEventListener("click", () => {
-  withdrawModal.style.display = "none";
-});
-
-// Hide Modal if clicked outside the content area
-window.addEventListener("click", (event) => {
-  if (event.target == withdrawModal) {
-    withdrawModal.style.display = "none";
-  }
-});
-
-// Show UPI Details
-upiOptionBtn.addEventListener("click", () => {
-    upiDetailsDiv.style.display = "block";
-    giftcardDetailsDiv.style.display = "none";
-    withdrawMessage.textContent = "";
-});
-
-// Show Gift Card Details
-giftcardOptionBtn.addEventListener("click", () => {
-    giftcardDetailsDiv.style.display = "block";
-    upiDetailsDiv.style.display = "none";
-    withdrawMessage.textContent = "";
-});
-
-// Handle UPI Withdraw Submission (Placeholder)
-submitUpiBtn.addEventListener("click", () => {
-    const upiId = upiIdInput.value.trim();
-    const amount = parseInt(upiAmountInput.value);
-
-    withdrawMessage.textContent = ""; // Clear previous messages
-
-    if (!upiId || !/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upiId)) {
-        withdrawMessage.textContent = "Please enter a valid UPI ID.";
-        withdrawMessage.style.color = "red";
-        return;
-    }
-     if (isNaN(amount) || amount <= 0) {
-        withdrawMessage.textContent = "Please enter a valid amount.";
-        withdrawMessage.style.color = "red";
-        return;
-    }
-    if (amount < minWithdrawalCoins) {
-         withdrawMessage.textContent = `Minimum withdrawal amount is ${minWithdrawalCoins} coins.`;
-         withdrawMessage.style.color = "red";
-         return;
-    }
-     if (amount > walletBalance) {
-        withdrawMessage.textContent = "Insufficient balance.";
-        withdrawMessage.style.color = "red";
-        return;
-    }
-
-    // **IMPORTANT: Backend Integration Needed Here**
-    // Send 'upiId' and 'amount' to your backend server for processing.
-    // The backend should validate, process the payment, and update the user's balance.
-    console.log(`Withdraw Request: UPI ID=${upiId}, Amount=${amount}`);
-    withdrawMessage.textContent = "Processing UPI withdrawal request...";
-    withdrawMessage.style.color = "orange";
-
-    // Simulate backend processing delay and response
+    // 3. कुछ देर बाद (एनिमेशन टाइम) एनिमेशन रोकें और रिजल्ट दिखाएं
     setTimeout(() => {
-        // --- Replace this with actual backend response handling ---
-        const success = true; // Simulate success/failure from backend
-        if (success) {
-             walletBalance -= amount; // Deduct from balance ONLY on success
-             updateWalletDisplay();
-             withdrawMessage.textContent = `Successfully initiated withdrawal of ${amount} coins to ${upiId}.`;
-             withdrawMessage.style.color = "green";
-             upiIdInput.value = ""; // Clear inputs on success
-             upiAmountInput.value = "";
-             // Optionally close the modal after a delay
-             // setTimeout(() => { withdrawModal.style.display = "none"; }, 2000);
-        } else {
-            withdrawMessage.textContent = "UPI withdrawal failed. Please try again later.";
-            withdrawMessage.style.color = "red";
-        }
-        // --- End of backend simulation ---
-    }, 1500); // Simulate 1.5 second delay
-});
+        clearInterval(rotationInterval); // रोटेशन रोकें
+        // फाइनल एंगल सेट करें
+        myChart.options.rotation = randomDegree;
+        myChart.update();
 
-// Handle Gift Card Withdraw Submission (Placeholder)
-submitGiftcardBtn.addEventListener("click", () => {
-    const cardType = giftcardTypeSelect.value;
-    const amount = parseInt(giftcardAmountInput.value);
+        // --- यहाँ रिजल्ट और वॉलेट अपडेट लॉजिक डालें ---
+        // 1. स्टॉप एंगल से वैल्यू निकालें
+        const resultValue = valueGenerator(randomDegree);
+        const resultText = `You won: ${resultValue} coins!`;
 
-    withdrawMessage.textContent = ""; // Clear previous messages
+        // 2. रिजल्ट दिखाएं
+        finalValueDisplay.innerHTML = `<p>${resultText}</p>`;
 
-    if (isNaN(amount) || amount <= 0) {
-        withdrawMessage.textContent = "Please enter a valid amount.";
-        withdrawMessage.style.color = "red";
+        // 3. वॉलेट अपडेट करें
+        walletBalance += resultValue;
+        walletBalanceDisplay.textContent = walletBalance;
+
+        // 4. स्पिन बटन फिर से इनेबल करें
+        spinBtn.disabled = false;
+        console.log("Spin finished. Wallet:", walletBalance);
+
+        // विथड्रा बटन की स्थिति अपडेट करें
+        updateWithdrawButtonState();
+
+    }, 4000); // मान लें स्पिन एनिमेशन 4 सेकंड चलता है
+    // --------------------------------------------------
+}
+
+// --- स्पिन बटन का क्लिक इवेंट ---
+spinBtn.addEventListener("click", () => {
+    // अगर myChart अभी लोड नहीं हुआ है तो कुछ न करें
+    if (!myChart) {
+        console.error("Chart not initialized yet.");
         return;
     }
-     if (amount < minWithdrawalCoins) { // You might have different minimums for gift cards
-         withdrawMessage.textContent = `Minimum withdrawal amount is ${minWithdrawalCoins} coins.`; // Adjust if needed
-         withdrawMessage.style.color = "red";
-         return;
+
+    spinCount++; // स्पिन काउंटर बढ़ाएं
+
+    // ऐड दिखाने की शर्त: पहला स्पिन या हर 5 स्पिन के बाद (छठे, ग्यारहवें, आदि स्पिन से पहले)
+    const shouldShowAd = (spinCount === 1 || (spinCount - 1) % 5 === 0);
+
+    if (shouldShowAd) {
+        console.log(`Spin #${spinCount}: Ad is required.`);
+
+        // --- Adsterra Popunder को हैंडल करना ---
+        // Popunder स्क्रिप्ट (HTML में) क्लिक पर खुद ही काम करेगी।
+        // यूज़र को सूचित करें और थोड़ी देर बाद स्पिन शुरू करें।
+        // आप चाहें तो alert हटा सकते हैं अगर यह परेशान करता है।
+        alert("An ad may open. The spin will start shortly.");
+
+        // थोड़ी देरी (e.g., 500ms) के बाद वास्तविक स्पिन फंक्शन को कॉल करें
+        setTimeout(executeActualSpin, 500);
+
+    } else {
+        // अगर ऐड नहीं दिखाना है, तो सीधे स्पिन फंक्शन को कॉल करें
+        console.log(`Spin #${spinCount}: No ad required.`);
+        executeActualSpin();
+    }
+});
+
+
+// --- विथड्रावल लॉजिक ---
+
+function updateWithdrawButtonState() {
+    // मान लें कम से कम 50 कॉइन विथड्रा करने के लिए चाहिए
+    if (walletBalance >= 50) {
+        withdrawBtn.disabled = false;
+        withdrawBtn.style.opacity = 1;
+        withdrawBtn.style.cursor = 'pointer';
+    } else {
+        withdrawBtn.disabled = true;
+        withdrawBtn.style.opacity = 0.5;
+        withdrawBtn.style.cursor = 'not-allowed';
+    }
+}
+
+// विथड्रा बटन क्लिक पर मोडल खोलें
+withdrawBtn.addEventListener('click', () => {
+    if (!withdrawBtn.disabled) {
+        modalBalanceDisplay.textContent = walletBalance; // मोडल में बैलेंस दिखाएं
+        upiDetailsDiv.style.display = 'none'; // शुरुआत में डिटेल्स छिपाएं
+        giftcardDetailsDiv.style.display = 'none';
+        withdrawMessage.textContent = ''; // पिछला मैसेज हटाएं
+        modal.style.display = 'flex'; // मोडल दिखाएं (flex या block)
+    }
+});
+
+// मोडल बंद करें
+closeModalBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+});
+
+// मोडल के बाहर क्लिक करने पर बंद करें
+window.addEventListener('click', (event) => {
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// विथड्रावल ऑप्शन चुनने पर
+upiOptionBtn.addEventListener('click', () => {
+    upiDetailsDiv.style.display = 'block';
+    giftcardDetailsDiv.style.display = 'none';
+});
+
+giftcardOptionBtn.addEventListener('click', () => {
+    giftcardDetailsDiv.style.display = 'block';
+    upiDetailsDiv.style.display = 'none';
+});
+
+// UPI विथड्रावल सबमिट
+submitUpiWithdrawBtn.addEventListener('click', () => {
+    const amount = parseInt(document.getElementById('upi-amount').value);
+    const upiId = document.getElementById('upi-id').value.trim();
+
+    if (!upiId) {
+        withdrawMessage.textContent = 'Please enter your UPI ID.';
+        withdrawMessage.style.color = 'red';
+        return;
+    }
+    if (isNaN(amount) || amount < 50) {
+        withdrawMessage.textContent = 'Minimum withdrawal amount for UPI is 50 coins.';
+         withdrawMessage.style.color = 'red';
+        return;
     }
     if (amount > walletBalance) {
-        withdrawMessage.textContent = "Insufficient balance.";
-         withdrawMessage.style.color = "red";
+        withdrawMessage.textContent = 'Insufficient balance.';
+        withdrawMessage.style.color = 'red';
         return;
     }
 
-     // **IMPORTANT: Backend Integration Needed Here**
-    // Send 'cardType' and 'amount' to your backend server.
-    // The backend should validate, generate/fetch the gift card code, and update the user's balance.
-    console.log(`Withdraw Request: Gift Card Type=${cardType}, Amount=${amount}`);
-    withdrawMessage.textContent = "Processing Gift Card request...";
-    withdrawMessage.style.color = "orange";
-
-
-    // Simulate backend processing delay and response
-    setTimeout(() => {
-        // --- Replace this with actual backend response handling ---
-        const success = true; // Simulate success/failure from backend
-        const giftCardCode = "ABCD-EFGH-IJKL"; // Simulate received code from backend
-
-        if (success) {
-             walletBalance -= amount; // Deduct from balance ONLY on success
-             updateWalletDisplay();
-             // Display the code (or confirmation) to the user
-             withdrawMessage.innerHTML = `Successfully generated ${cardType} Gift Card worth ${amount} coins.<br>Your code: <strong>${giftCardCode}</strong> (This is a fake code)`;
-             withdrawMessage.style.color = "green";
-             giftcardAmountInput.value = ""; // Clear input on success
-              // Optionally close the modal after a delay
-             // setTimeout(() => { withdrawModal.style.display = "none"; }, 5000); // Longer delay to show code
-        } else {
-            withdrawMessage.textContent = "Gift Card request failed. Please try again later.";
-            withdrawMessage.style.color = "red";
-        }
-         // --- End of backend simulation ---
-    }, 2000); // Simulate 2 second delay
+    // --- यहाँ सर्वर पर विथड्रावल रिक्वेस्ट भेजने का लॉजिक आएगा ---
+    console.log(`Withdrawal Request: ${amount} coins to UPI ID: ${upiId}`);
+    // अभी के लिए, हम सिर्फ बैलेंस कम कर देंगे और मैसेज दिखाएंगे
+    walletBalance -= amount;
+    walletBalanceDisplay.textContent = walletBalance;
+    modalBalanceDisplay.textContent = walletBalance; // मोडल में भी अपडेट करें
+    withdrawMessage.textContent = `Withdrawal request for ${amount} coins submitted!`;
+    withdrawMessage.style.color = 'green';
+    updateWithdrawButtonState(); // विथड्रा बटन की स्थिति अपडेट करें
+     document.getElementById('upi-amount').value = ''; // फ़ील्ड साफ़ करें
+     document.getElementById('upi-id').value = '';
+    // setTimeout(() => { modal.style.display = 'none'; }, 2000); // 2 सेकंड बाद मोडल बंद करें
 });
 
-// Initialize wallet display on page load
-updateWalletDisplay();
+// Gift Card विथड्रावल सबमिट
+submitGiftcardWithdrawBtn.addEventListener('click', () => {
+    const amount = parseInt(document.getElementById('giftcard-amount').value);
+    const cardType = document.getElementById('giftcard-type').value;
+
+     if (isNaN(amount) || amount < 100) { // मान लें गिफ्ट कार्ड के लिए मिनिमम 100 है
+        withdrawMessage.textContent = 'Minimum amount for Gift Card is 100 coins.';
+         withdrawMessage.style.color = 'red';
+        return;
+    }
+    if (amount > walletBalance) {
+        withdrawMessage.textContent = 'Insufficient balance.';
+        withdrawMessage.style.color = 'red';
+        return;
+    }
+
+     // --- यहाँ सर्वर पर विथड्रावल रिक्वेस्ट भेजने का लॉजिक आएगा ---
+     console.log(`Withdrawal Request: ${amount} coins for ${cardType} Gift Card`);
+     // अभी के लिए, हम सिर्फ बैलेंस कम कर देंगे और मैसेज दिखाएंगे
+    walletBalance -= amount;
+    walletBalanceDisplay.textContent = walletBalance;
+    modalBalanceDisplay.textContent = walletBalance;
+     withdrawMessage.textContent = `Request for ${cardType} gift card (${amount} coins) submitted!`;
+     withdrawMessage.style.color = 'green';
+     updateWithdrawButtonState();
+     document.getElementById('giftcard-amount').value = '';
+    // setTimeout(() => { modal.style.display = 'none'; }, 2000);
+});
+
+// सुनिश्चित करें कि पेज लोड पर विथड्रा बटन की सही स्थिति हो
+document.addEventListener('DOMContentLoaded', updateWithdrawButtonState);
