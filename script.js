@@ -16,7 +16,7 @@ const submitGiftcardWithdrawBtn = document.getElementById('submit-giftcard-withd
 const withdrawMessage = document.getElementById('withdraw-message');
 
 // ऐप वेरिएबल्स
-let walletBalance = 0; // यूज़र का वॉलेट बैलेंस
+let walletBalance = 75; // यूज़र का वॉलेट बैलेंस (शुरुआत में 75 सेट करें)
 let spinCount = 0;    // स्पिन का काउंटर
 let myChart = null; // Chart.js ऑब्जेक्ट को स्टोर करने के लिए
 
@@ -36,7 +36,7 @@ const pieColors = ["#8b36b8", "#702ca1", "#5b2484", "#8b36b8", "#702ca1", "#5b24
 
 // Chart.js व्हील बनाना (पेज लोड पर)
 document.addEventListener('DOMContentLoaded', () => {
-     myChart = new Chart(wheelCanvas, {
+    myChart = new Chart(wheelCanvas, {
         plugins: [ChartDataLabels],
         type: "pie",
         data: {
@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
     });
     updateWithdrawButtonState(); // शुरुआत में विथड्रा बटन की स्थिति सेट करें
+    walletBalanceDisplay.textContent = walletBalance; // पेज लोड पर वॉलेट बैलेंस दिखाएं
 });
 
 
@@ -157,7 +158,7 @@ spinBtn.addEventListener("click", () => {
 // --- विथड्रावल लॉजिक ---
 
 function updateWithdrawButtonState() {
-    // मान लें कम से कम 50 कॉइन विथड्रा करने के लिए चाहिए
+    // मान लें कम से कम 1000 कॉइन विथड्रा करने के लिए चाहिए
     if (walletBalance >= 1000) {
         withdrawBtn.disabled = false;
         withdrawBtn.style.opacity = 1;
@@ -215,7 +216,7 @@ submitUpiWithdrawBtn.addEventListener('click', () => {
     }
     if (isNaN(amount) || amount < 1000) {
         withdrawMessage.textContent = 'Minimum withdrawal amount for UPI is 1000 coins.';
-         withdrawMessage.style.color = 'red';
+        withdrawMessage.style.color = 'red';
         return;
     }
     if (amount > walletBalance) {
@@ -233,8 +234,8 @@ submitUpiWithdrawBtn.addEventListener('click', () => {
     withdrawMessage.textContent = `Withdrawal request for ${amount} coins submitted!`;
     withdrawMessage.style.color = 'green';
     updateWithdrawButtonState(); // विथड्रा बटन की स्थिति अपडेट करें
-     document.getElementById('upi-amount').value = ''; // फ़ील्ड साफ़ करें
-     document.getElementById('upi-id').value = '';
+    document.getElementById('upi-amount').value = ''; // फ़ील्ड साफ़ करें
+    document.getElementById('upi-id').value = '';
     // setTimeout(() => { modal.style.display = 'none'; }, 2000); // 2 सेकंड बाद मोडल बंद करें
 });
 
@@ -243,9 +244,9 @@ submitGiftcardWithdrawBtn.addEventListener('click', () => {
     const amount = parseInt(document.getElementById('giftcard-amount').value);
     const cardType = document.getElementById('giftcard-type').value;
 
-     if (isNaN(amount) || amount < 100) { // मान लें गिफ्ट कार्ड के लिए मिनिमम 100 है
+    if (isNaN(amount) || amount < 100) { // मान लें गिफ्ट कार्ड के लिए मिनिमम 100 है
         withdrawMessage.textContent = 'Minimum amount for Gift Card is 100 coins.';
-         withdrawMessage.style.color = 'red';
+        withdrawMessage.style.color = 'red';
         return;
     }
     if (amount > walletBalance) {
@@ -254,16 +255,16 @@ submitGiftcardWithdrawBtn.addEventListener('click', () => {
         return;
     }
 
-     // --- यहाँ सर्वर पर विथड्रावल रिक्वेस्ट भेजने का लॉजिक आएगा ---
-     console.log(`Withdrawal Request: ${amount} coins for ${cardType} Gift Card`);
-     // अभी के लिए, हम सिर्फ बैलेंस कम कर देंगे और मैसेज दिखाएंगे
+    // --- यहाँ सर्वर पर विथड्रावल रिक्वेस्ट भेजने का लॉजिक आएगा ---
+    console.log(`Withdrawal Request: ${amount} coins for ${cardType} Gift Card`);
+    // अभी के लिए, हम सिर्फ बैलेंस कम कर देंगे और मैसेज दिखाएंगे
     walletBalance -= amount;
     walletBalanceDisplay.textContent = walletBalance;
     modalBalanceDisplay.textContent = walletBalance;
-     withdrawMessage.textContent = `Request for ${cardType} gift card (${amount} coins) submitted!`;
-     withdrawMessage.style.color = 'green';
-     updateWithdrawButtonState();
-     document.getElementById('giftcard-amount').value = '';
+    withdrawMessage.textContent = `Request for ${cardType} gift card (${amount} coins) submitted!`;
+    withdrawMessage.style.color = 'green';
+    updateWithdrawButtonState();
+    document.getElementById('giftcard-amount').value = '';
     // setTimeout(() => { modal.style.display = 'none'; }, 2000);
 });
 
