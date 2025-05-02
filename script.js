@@ -1,6 +1,15 @@
 const wheel = document.getElementById("wheel");
 const spinBtn = document.getElementById("spin-btn");
 const finalValue = document.getElementById("final-value");
+// शुरुआती वॉलेट राशि
+let walletBalance = 50; // उदाहरण के लिए, प्रारंभिक राशि 50 सिक्के
+
+// वॉलेट राशि को डिस्प्ले पर अपडेट करने का फंक्शन
+const updateWalletDisplay = () => {
+    if (walletAmountDisplay) {
+        walletAmountDisplay.innerText = `Wallet: ${walletBalance} coins`;
+    }
+};
 //Object that stores values of minimum and maximum angle for a value
 const rotationValues = [
   { minDegree: 0, maxDegree: 30, value: 2 },
@@ -103,3 +112,19 @@ spinBtn.addEventListener("click", () => {
     }
   }, 10);
 });
+// विथड्रॉ बटन के लिए इवेंट लिस्नर
+if (withdrawButton) {
+    withdrawButton.addEventListener("click", () => {
+        if (withdrawalOptionsDiv) {
+            withdrawalOptionsDiv.innerHTML = `
+                <h3>Withdraw Options</h3>
+                <p>Current Balance: ${walletBalance} coins</p>
+                <button>UPI</button>
+                <button>Gift Card</button>
+            `;
+        }
+    });
+}
+
+// पेज लोड होने पर वॉलेट डिस्प्ले को अपडेट करें
+updateWalletDisplay();
