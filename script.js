@@ -5,11 +5,10 @@ const walletAmountDisplay = document.getElementById("wallet-amount");
 const withdrawButton = document.getElementById("withdraw-btn");
 const withdrawalOptionsDiv = document.getElementById("withdraw-options");
 
-// 🔁 LocalStorage से वॉलेट बैलेंस लाओ या 50 coins से शुरू करो
-let storedBalance = localStorage.getItem("walletBalance");
-let walletBalance = storedBalance ? parseInt(storedBalance) : 50;
+// 🔁 LocalStorage से वॉलेट राशि प्राप्त करें या 50 सेट करें
+let walletBalance = parseInt(localStorage.getItem("walletBalance")) || 50;
 
-// वॉलेट डिस्प्ले अपडेट करने का फंक्शन
+// वॉलेट राशि को अपडेट और दिखाने का फंक्शन
 const updateWalletDisplay = () => {
     if (walletAmountDisplay) {
         walletAmountDisplay.innerText = `Wallet: ${walletBalance} coins`;
@@ -18,7 +17,7 @@ const updateWalletDisplay = () => {
     }
 };
 
-// रोटेशन वैल्यूज
+// 🎯 Wheel के rewards के angle और value
 const rotationValues = [
     { minDegree: 0, maxDegree: 30, value: 2 },
     { minDegree: 31, maxDegree: 90, value: 1 },
@@ -29,17 +28,27 @@ const rotationValues = [
     { minDegree: 331, maxDegree: 360, value: 2 },
 ];
 
-// Pie चार्ट के डेटा
+// Wheel pieces और colors
 const data = [16, 16, 16, 16, 16, 16];
-const pieColors = ["#8b35bc", "#b163da", "#8b35bc", "#b163da", "#8b35bc", "#b163da"];
+const pieColors = [
+    "#8b35bc",
+    "#b163da",
+    "#8b35bc",
+    "#b163da",
+    "#8b35bc",
+    "#b163da",
+];
 
-// Chart बनाना
+// 🎡 Wheel Chart बनाएं
 let myChart = new Chart(wheel, {
     plugins: [ChartDataLabels],
     type: "pie",
     data: {
         labels: [1, 2, 3, 4, 5, 6],
-        datasets: [{ backgroundColor: pieColors, data: data }],
+        datasets: [{
+            backgroundColor: pieColors,
+            data: data,
+        }],
     },
     options: {
         responsive: true,
@@ -56,28 +65,28 @@ let myChart = new Chart(wheel, {
     },
 });
 
-// रोटेशन से वैल्यू निकालना
+// 🎁 जीत की वैल्यू और wallet में जोड़ें
 const valueGenerator = (angleValue) => {
     for (let i of rotationValues) {
         if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
             finalValue.innerHTML = `<p>You won: ${i.value} coins!</p>`;
-            walletBalance += i.value; // 🟢 वॉलेट में जोड़ो
-            localStorage.setItem("walletBalance", walletBalance); // 🟢 सेव करो localStorage में
-            updateWalletDisplay(); // UI अपडेट
+            walletBalance += i.value;
+            localStorage.setItem("walletBalance", walletBalance); // save to storage
+            updateWalletDisplay();
             spinBtn.disabled = false;
             break;
         }
     }
 };
 
-// स्पिनिंग लॉजिक
+// 🌀 Spin Logic
 let count = 0;
 let resultValue = 101;
 
 spinBtn.addEventListener("click", () => {
     spinBtn.disabled = true;
     finalValue.innerHTML = `<p>Good Luck!</p>`;
-    let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
+    let randomDegree = Math.floor(Math.random() * 356);
 
     let rotationInterval = window.setInterval(() => {
         myChart.options.rotation += resultValue;
@@ -87,7 +96,7 @@ spinBtn.addEventListener("click", () => {
             count += 1;
             resultValue -= 5;
             myChart.options.rotation = 0;
-        } else if (count > 15 && myChart.options.rotation == randomDegree) {
+        } else if (count > 15 && myChart.options.rotation === randomDegree) {
             valueGenerator(randomDegree);
             clearInterval(rotationInterval);
             count = 0;
@@ -96,7 +105,7 @@ spinBtn.addEventListener("click", () => {
     }, 10);
 });
 
-// विथड्रॉ बटन
+// 💸 Withdraw Button
 if (withdrawButton) {
     withdrawButton.addEventListener("click", () => {
         if (withdrawalOptionsDiv) {
@@ -114,14 +123,26 @@ if (withdrawButton) {
     console.error("Error: 'withdraw-btn' element not found in the HTML.");
 }
 
-// पेज लोड पर UI अपडेट करें
-updateWalletDisplay();
-
-// विथड्रॉ प्रोसेस
+// 💵 Withdrawal Logic
 function handleWithdraw(method) {
+    let minimumWithdrawal = 10;  // Withdraw करने के लिए न्यूनतम coins
+    let deduction = 10;          // हर withdrawal पर घटने वाले coins
+
+    if (walletBalance < minimumWithdrawal) {
+        alert(`You need at least ${minimumWithdrawal} coins to withdraw.`);
+        return;
+    }
+
+    walletBalance -= deduction;
+    localStorage.setItem("walletBalance", walletBalance);
+    updateWalletDisplay();
+
     if (method === 'upi') {
-        alert('UPI withdrawal functionality will be implemented here.');
+        alert(`You withdrew ${deduction} coins via UPI.`);
     } else if (method === 'giftcard') {
-        alert('Gift Card withdrawal functionality will be implemented here.');
+        alert(`You withdrew ${deduction} coins for a Gift Card.`);
     }
 }
+
+// 🔁 Page Load पर wallet दिखाएं
+updateWalletDisplay();
