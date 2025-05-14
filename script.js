@@ -5,10 +5,11 @@ const walletAmountDisplay = document.getElementById("wallet-amount");
 const withdrawButton = document.getElementById("withdraw-btn");
 const withdrawalOptionsDiv = document.getElementById("withdraw-options");
 
-// शुरुआती वॉलेट राशि
-let walletBalance = 50; // उदाहरण के लिए, प्रारंभिक राशि 50 सिक्के
+// 🔁 LocalStorage से वॉलेट बैलेंस लाओ या 50 coins से शुरू करो
+let storedBalance = localStorage.getItem("walletBalance");
+let walletBalance = storedBalance ? parseInt(storedBalance) : 50;
 
-// वॉलेट राशि को डिस्प्ले पर अपडेट करने का फंक्शन
+// वॉलेट डिस्प्ले अपडेट करने का फंक्शन
 const updateWalletDisplay = () => {
     if (walletAmountDisplay) {
         walletAmountDisplay.innerText = `Wallet: ${walletBalance} coins`;
@@ -16,7 +17,8 @@ const updateWalletDisplay = () => {
         console.error("Error: 'wallet-amount' element not found in the HTML.");
     }
 };
-//Object that stores values of minimum and maximum angle for a value
+
+// रोटेशन वैल्यूज
 const rotationValues = [
     { minDegree: 0, maxDegree: 30, value: 2 },
     { minDegree: 31, maxDegree: 90, value: 1 },
@@ -26,45 +28,25 @@ const rotationValues = [
     { minDegree: 271, maxDegree: 330, value: 3 },
     { minDegree: 331, maxDegree: 360, value: 2 },
 ];
-//Size of each piece
+
+// Pie चार्ट के डेटा
 const data = [16, 16, 16, 16, 16, 16];
-//background color for each piece
-var pieColors = [
-    "#8b35bc",
-    "#b163da",
-    "#8b35bc",
-    "#b163da",
-    "#8b35bc",
-    "#b163da",
-];
-//Create chart
+const pieColors = ["#8b35bc", "#b163da", "#8b35bc", "#b163da", "#8b35bc", "#b163da"];
+
+// Chart बनाना
 let myChart = new Chart(wheel, {
-    //Plugin for displaying text on pie chart
     plugins: [ChartDataLabels],
-    //Chart Type Pie
     type: "pie",
     data: {
-        //Labels(values which are to be displayed on chart)
         labels: [1, 2, 3, 4, 5, 6],
-        //Settings for dataset/pie
-        datasets: [
-            {
-                backgroundColor: pieColors,
-                data: data,
-            },
-        ],
+        datasets: [{ backgroundColor: pieColors, data: data }],
     },
     options: {
-        //Responsive chart
         responsive: true,
         animation: { duration: 0 },
         plugins: {
-            //hide tooltip and legend
             tooltip: false,
-            legend: {
-                display: false,
-            },
-            //display labels inside pie chart
+            legend: { display: false },
             datalabels: {
                 color: "#ffffff",
                 formatter: (_, context) => context.chart.data.labels[context.dataIndex],
@@ -73,41 +55,34 @@ let myChart = new Chart(wheel, {
         },
     },
 });
-//display value based on the randomAngle
+
+// रोटेशन से वैल्यू निकालना
 const valueGenerator = (angleValue) => {
     for (let i of rotationValues) {
-        //if the angleValue is between min and max then display it
         if (angleValue >= i.minDegree && angleValue <= i.maxDegree) {
             finalValue.innerHTML = `<p>You won: ${i.value} coins!</p>`;
-            walletBalance += i.value; // वॉलेट में जीता हुआ अमाउंट जोड़ें
-            updateWalletDisplay(); // वॉलेट डिस्प्ले को अपडेट करें
+            walletBalance += i.value; // 🟢 वॉलेट में जोड़ो
+            localStorage.setItem("walletBalance", walletBalance); // 🟢 सेव करो localStorage में
+            updateWalletDisplay(); // UI अपडेट
             spinBtn.disabled = false;
             break;
         }
     }
 };
 
-//Spinner count
+// स्पिनिंग लॉजिक
 let count = 0;
-//100 rotations for animation and last rotation for result
 let resultValue = 101;
-//Start spinning
+
 spinBtn.addEventListener("click", () => {
     spinBtn.disabled = true;
-    //Empty final value
     finalValue.innerHTML = `<p>Good Luck!</p>`;
-    //Generate random degrees to stop at
     let randomDegree = Math.floor(Math.random() * (355 - 0 + 1) + 0);
-    //Interval for rotation animation
+
     let rotationInterval = window.setInterval(() => {
-        //Set rotation for piechart
-        /*
-        Initially to make the piechart rotate faster we set resultValue to 101 so it rotates 101 degrees at a time and this reduces by 1 with every count. Eventually on last rotation we rotate by 1 degree at a time.
-        */
-        myChart.options.rotation = myChart.options.rotation + resultValue;
-        //Update chart with new value;
+        myChart.options.rotation += resultValue;
         myChart.update();
-        //If rotation>360 reset it back to 0
+
         if (myChart.options.rotation >= 360) {
             count += 1;
             resultValue -= 5;
@@ -120,7 +95,8 @@ spinBtn.addEventListener("click", () => {
         }
     }, 10);
 });
-// विथड्रॉ बटन के लिए इवेंट लिस्नर
+
+// विथड्रॉ बटन
 if (withdrawButton) {
     withdrawButton.addEventListener("click", () => {
         if (withdrawalOptionsDiv) {
@@ -138,16 +114,14 @@ if (withdrawButton) {
     console.error("Error: 'withdraw-btn' element not found in the HTML.");
 }
 
-// पेज लोड होने पर वॉलेट डिस्प्ले को अपडेट करें
+// पेज लोड पर UI अपडेट करें
 updateWalletDisplay();
 
+// विथड्रॉ प्रोसेस
 function handleWithdraw(method) {
     if (method === 'upi') {
         alert('UPI withdrawal functionality will be implemented here.');
-        // यहाँ UPI निकासी की लॉजिक लिखें
     } else if (method === 'giftcard') {
         alert('Gift Card withdrawal functionality will be implemented here.');
-        // यहाँ गिफ्ट कार्ड निकासी की लॉजिक लिखें
     }
-    // आप यहाँ आगे की प्रोसेसिंग (जैसे सर्वर को अनुरोध भेजना) कर सकते हैं
 }
